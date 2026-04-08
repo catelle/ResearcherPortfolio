@@ -2,7 +2,8 @@
   "site": {
     "brandName": "Portfolio",
     "footerPrefix": "© 2026 Built with",
-    "footerHighlight": "for digital Africa"
+    "footerHighlight": "for digital Africa",
+    "themeAccentColor": "#a855f7"
   },
   "hero": {
     "eyebrow": "Cybersecurity • Software Development • Tech Founder",

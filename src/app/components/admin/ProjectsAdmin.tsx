@@ -169,7 +169,7 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
             whileTap={{ scale: 0.98 }}
             onClick={() => void handleSave()}
             disabled={!canEdit || saving}
-            className="px-6 py-3 bg-[#a855f7] text-white rounded-lg font-medium hover:bg-[#9333ea] disabled:opacity-60 transition-colors flex items-center gap-2"
+            className="px-6 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
             {saving ? "Saving..." : "Save Projects"}
@@ -312,7 +312,7 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   disabled={saving}
-                  className="px-5 py-3 bg-[#a855f7] text-white rounded-lg font-medium hover:bg-[#9333ea] disabled:opacity-60 transition-colors"
+                  className="px-5 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors"
                 >
                   {saving
                     ? "Syncing..."
@@ -344,7 +344,7 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-lg font-bold text-foreground">{project.title}</h3>
-                <p className="text-sm text-[#a855f7]">{project.category}</p>
+                <p className="text-sm theme-accent-text">{project.category}</p>
               </div>
 
               <div className="flex gap-2">

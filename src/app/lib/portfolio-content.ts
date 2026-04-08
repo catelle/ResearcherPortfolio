@@ -30,6 +30,7 @@ export interface SiteContent {
   brandName: string;
   footerPrefix: string;
   footerHighlight: string;
+  themeAccentColor: string;
 }
 
 export interface HeroContent {

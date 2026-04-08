@@ -35,7 +35,7 @@ export function Navigation() {
           <motion.a
             href="/"
             whileHover={{ scale: 1.05 }}
-            className="text-2xl font-bold text-[#a855f7]"
+            className="text-2xl font-bold theme-accent-text"
           >
             {content.site.brandName}
           </motion.a>

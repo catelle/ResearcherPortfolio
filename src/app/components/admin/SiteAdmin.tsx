@@ -7,6 +7,7 @@ import {
   socialIconOptions,
   type SocialLink,
 } from "../../lib/portfolio-content";
+import { normalizeThemeAccentColor } from "../../lib/theme-accent";
 
 export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
   const { content, saveContent, saving, uploading, uploadAsset } = useData();
@@ -172,7 +173,7 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           disabled={!canEdit || saving || uploading}
-          className="px-6 py-3 bg-[#a855f7] text-white rounded-lg font-medium hover:bg-[#9333ea] disabled:opacity-60 transition-colors flex items-center gap-2"
+          className="px-6 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors flex items-center gap-2"
         >
           <Save className="w-4 h-4" />
           {uploading ? "Uploading..." : saving ? "Saving..." : "Save Site"}
@@ -231,25 +232,51 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Footer Highlight
-            </label>
-            <input
-              type="text"
-              value={formData.site.footerHighlight}
-              onChange={(event) =>
-                setFormData({
-                  ...formData,
-                  site: {
-                    ...formData.site,
-                    footerHighlight: event.target.value,
-                  },
-                })
-              }
-              disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-            />
+          <div className="grid md:grid-cols-[minmax(0,1fr)_240px] gap-6 items-end">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Footer Highlight
+              </label>
+              <input
+                type="text"
+                value={formData.site.footerHighlight}
+                onChange={(event) =>
+                  setFormData({
+                    ...formData,
+                    site: {
+                      ...formData.site,
+                      footerHighlight: event.target.value,
+                    },
+                  })
+                }
+                disabled={!canEdit}
+                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Accent Color
+              </label>
+              <input
+                type="color"
+                value={normalizeThemeAccentColor(formData.site.themeAccentColor)}
+                onChange={(event) =>
+                  setFormData({
+                    ...formData,
+                    site: {
+                      ...formData.site,
+                      themeAccentColor: event.target.value,
+                    },
+                  })
+                }
+                disabled={!canEdit}
+                className="h-12 w-full rounded-lg bg-background border border-border"
+              />
+              <p className="mt-2 text-xs text-muted-foreground">
+                Updates the shared highlight color after you save.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -838,7 +865,7 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     disabled={saving}
-                    className="px-5 py-3 bg-[#a855f7] text-white rounded-lg font-medium hover:bg-[#9333ea] disabled:opacity-60 transition-colors"
+                    className="px-5 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors"
                   >
                     {saving
                       ? "Syncing..."

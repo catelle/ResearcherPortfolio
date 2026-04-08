@@ -116,7 +116,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
           type="submit"
           form="vision-admin-form"
           disabled={!canEdit || saving}
-          className="px-6 py-3 bg-[#a855f7] text-white rounded-lg font-medium hover:bg-[#9333ea] disabled:opacity-60 transition-colors flex items-center gap-2"
+          className="px-6 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors flex items-center gap-2"
         >
           <Save className="w-4 h-4" />
           {saving ? "Saving..." : "Save Vision"}
@@ -244,7 +244,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     disabled={saving}
-                    className="px-5 py-3 bg-[#a855f7] text-white rounded-lg font-medium hover:bg-[#9333ea] disabled:opacity-60 transition-colors"
+                    className="px-5 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors"
                   >
                     {saving
                       ? "Syncing..."
@@ -274,7 +274,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm text-[#a855f7]">{pillar.icon}</p>
+                    <p className="text-sm theme-accent-text">{pillar.icon}</p>
                     <h4 className="font-semibold text-foreground">{pillar.title}</h4>
                   </div>
 

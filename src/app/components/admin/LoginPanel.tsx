@@ -41,7 +41,7 @@ export function LoginPanel() {
             onChange={(event) =>
               setFormData({ ...formData, email: event.target.value })
             }
-            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none focus:border-[#a855f7] focus:ring-2 focus:ring-[#a855f7]/20"
+            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none theme-accent-field"
             placeholder="admin@example.com"
             required
           />
@@ -57,7 +57,7 @@ export function LoginPanel() {
             onChange={(event) =>
               setFormData({ ...formData, password: event.target.value })
             }
-            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none focus:border-[#a855f7] focus:ring-2 focus:ring-[#a855f7]/20"
+            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none theme-accent-field"
             placeholder="Your secure password"
             required
           />
@@ -72,7 +72,7 @@ export function LoginPanel() {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
           disabled={submitting}
-          className="w-full px-6 py-3 bg-[#a855f7] text-white rounded-lg font-medium hover:bg-[#9333ea] disabled:opacity-60 transition-colors flex items-center justify-center gap-2"
+          className="w-full px-6 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors flex items-center justify-center gap-2"
         >
           <LogIn className="w-4 h-4" />
           {submitting ? "Signing In..." : "Sign In"}

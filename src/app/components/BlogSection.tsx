@@ -22,7 +22,7 @@ export function BlogSection() {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             {blog.intro}
           </p>
-          <div className="w-24 h-1 bg-[#a855f7] mx-auto mt-6 rounded-full" />
+          <div className="w-24 h-1 theme-accent-line mx-auto mt-6 rounded-full" />
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -36,7 +36,7 @@ export function BlogSection() {
               whileHover={{ y: -8 }}
               className="group cursor-pointer"
             >
-              <div className="h-full rounded-2xl bg-card border border-border hover:border-[#a855f7]/50 transition-all duration-300 shadow-sm overflow-hidden">
+              <div className="h-full rounded-2xl bg-card border border-border theme-accent-hover-border transition-all duration-300 shadow-sm overflow-hidden">
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden bg-muted">
                   <img
@@ -45,7 +45,7 @@ export function BlogSection() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 text-xs rounded-full bg-[#a855f7] text-white font-medium">
+                    <span className="px-3 py-1 text-xs rounded-full theme-accent-badge font-medium">
                       {post.category}
                     </span>
                   </div>
@@ -64,7 +64,7 @@ export function BlogSection() {
                     </div>
                   </div>
 
-                  <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-[#a855f7] transition-colors">
+                  <h3 className="text-xl font-bold text-foreground mb-3 group-hover-theme-accent-text transition-colors">
                     {post.title}
                   </h3>
 
@@ -72,7 +72,7 @@ export function BlogSection() {
                     {post.excerpt}
                   </p>
 
-                  <div className="flex items-center gap-2 text-[#a855f7] font-medium">
+                  <div className="flex items-center gap-2 theme-accent-text font-medium">
                     <span>Read More</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                   </div>

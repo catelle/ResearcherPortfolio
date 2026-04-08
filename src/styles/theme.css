@@ -11,6 +11,12 @@
   --portfolio-emerald: #10b981;
   --portfolio-glass: rgba(255, 255, 255, 0.05);
   --portfolio-glass-border: rgba(255, 255, 255, 0.1);
+  --theme-accent: #a855f7;
+  --theme-accent-hover: #9333ea;
+  --theme-accent-contrast: #ffffff;
+  --theme-accent-soft: rgba(168, 85, 247, 0.3);
+  --theme-accent-faint: rgba(168, 85, 247, 0.18);
+  --theme-accent-ring: rgba(168, 85, 247, 0.22);
   
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
@@ -187,5 +193,82 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+}
+
+@layer components {
+  .theme-accent-text {
+    color: var(--theme-accent);
+  }
+
+  .theme-accent-solid {
+    background-color: var(--theme-accent);
+    color: var(--theme-accent-contrast);
+  }
+
+  .theme-accent-button {
+    background-color: var(--theme-accent);
+    color: var(--theme-accent-contrast);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .theme-accent-button:hover {
+    background-color: var(--theme-accent-hover);
+  }
+
+  .theme-accent-line {
+    background-color: var(--theme-accent);
+  }
+
+  .theme-accent-border {
+    border-color: var(--theme-accent);
+  }
+
+  .theme-accent-panel {
+    border-color: var(--theme-accent-faint);
+  }
+
+  .theme-accent-hover-border {
+    transition: border-color 0.2s ease;
+  }
+
+  .theme-accent-hover-border:hover {
+    border-color: var(--theme-accent-soft);
+  }
+
+  .theme-accent-badge {
+    background-color: var(--theme-accent);
+    color: var(--theme-accent-contrast);
+  }
+
+  .theme-accent-field {
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .theme-accent-field:focus {
+    border-color: var(--theme-accent);
+    box-shadow: 0 0 0 2px var(--theme-accent-ring);
+  }
+
+  .theme-accent-dot {
+    background-color: var(--theme-accent);
+  }
+
+  .theme-accent-tab {
+    color: var(--theme-accent);
+    border-color: var(--theme-accent);
+  }
+
+  .theme-accent-fill {
+    fill: var(--theme-accent);
+  }
+
+  .group:hover .group-hover-theme-accent-text {
+    color: var(--theme-accent);
   }
 }

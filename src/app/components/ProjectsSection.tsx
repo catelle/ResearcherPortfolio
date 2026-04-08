@@ -23,7 +23,7 @@ export function ProjectsSection() {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             {projects.intro}
           </p>
-          <div className="w-24 h-1 bg-[#a855f7] mx-auto mt-6 rounded-full" />
+          <div className="w-24 h-1 theme-accent-line mx-auto mt-6 rounded-full" />
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -41,7 +41,7 @@ export function ProjectsSection() {
                 whileHover={{ y: -8 }}
                 className="group relative"
               >
-                <div className="relative h-full p-8 rounded-2xl bg-card border border-border hover:border-[#a855f7]/50 transition-all duration-300 shadow-sm">
+                <div className="relative h-full p-8 rounded-2xl bg-card border border-border theme-accent-hover-border transition-all duration-300 shadow-sm">
                   <div className="relative">
                     {/* Icon and category */}
                     <div className="flex items-start justify-between mb-6">
@@ -51,14 +51,14 @@ export function ProjectsSection() {
                       >
                         <IconComponent className="w-6 h-6" style={{ color: project.color }} />
                       </div>
-                      <ExternalLink className="w-5 h-5 text-muted-foreground group-hover:text-[#a855f7] transition-colors" />
+                      <ExternalLink className="w-5 h-5 text-muted-foreground group-hover-theme-accent-text transition-colors" />
                     </div>
 
                     <h3 className="text-2xl font-bold text-foreground mb-2">
                       {project.title}
                     </h3>
 
-                    <p className="text-sm text-[#a855f7] mb-6">
+                    <p className="text-sm theme-accent-text mb-6">
                       {project.category}
                     </p>
 
@@ -95,7 +95,7 @@ export function ProjectsSection() {
 
                     {/* Impact */}
                     <div className="pt-4 border-t border-border">
-                      <h4 className="text-sm font-semibold text-[#a855f7] mb-2">Impact</h4>
+                      <h4 className="text-sm font-semibold theme-accent-text mb-2">Impact</h4>
                       <p className="text-muted-foreground italic leading-relaxed">
                         {project.impact}
                       </p>

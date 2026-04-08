@@ -5,7 +5,6 @@ const defaultContentUrl = new URL(
   import.meta.url,
 );
 
-let cachedDefaultContent = null;
 let mongoClientPromise;
 
 function isPlainObject(value) {
@@ -13,12 +12,8 @@ function isPlainObject(value) {
 }
 
 async function loadDefaultContent() {
-  if (!cachedDefaultContent) {
-    const raw = await fs.readFile(defaultContentUrl, "utf8");
-    cachedDefaultContent = JSON.parse(raw);
-  }
-
-  return structuredClone(cachedDefaultContent);
+  const raw = await fs.readFile(defaultContentUrl, "utf8");
+  return JSON.parse(raw);
 }
 
 function normalizeWithTemplate(template, input) {

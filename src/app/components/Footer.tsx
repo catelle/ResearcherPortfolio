@@ -18,7 +18,7 @@ export function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-2xl font-bold text-[#a855f7]">
+            <p className="text-2xl font-bold theme-accent-text">
               {content.site.brandName}
             </p>
           </motion.div>
@@ -32,7 +32,7 @@ export function Footer() {
             className="flex items-center gap-2 text-muted-foreground"
           >
             <span>{content.site.footerPrefix}</span>
-            <Heart className="w-4 h-4 text-[#ec4899] fill-[#ec4899]" />
+            <Heart className="w-4 h-4 theme-accent-text theme-accent-fill" />
             <span>{content.site.footerHighlight}</span>
           </motion.div>
 

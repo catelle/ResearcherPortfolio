@@ -183,7 +183,7 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
             whileTap={{ scale: 0.98 }}
             onClick={() => void handleSave()}
             disabled={!canEdit || saving}
-            className="px-6 py-3 bg-[#a855f7] text-white rounded-lg font-medium hover:bg-[#9333ea] disabled:opacity-60 transition-colors flex items-center gap-2"
+            className="px-6 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
             {saving ? "Saving..." : "Save Blog"}
@@ -313,7 +313,7 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   disabled={saving || uploading}
-                  className="px-5 py-3 bg-[#a855f7] text-white rounded-lg font-medium hover:bg-[#9333ea] disabled:opacity-60 transition-colors"
+                  className="px-5 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors"
                 >
                   {uploading
                     ? "Uploading..."
@@ -347,7 +347,7 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
             <img src={post.image} alt={post.title} className="w-full h-40 object-cover" />
             <div className="p-5 space-y-3">
               <div className="flex items-center justify-between gap-3">
-                <span className="px-3 py-1 text-xs rounded-full bg-[#a855f7] text-white font-medium">
+                <span className="px-3 py-1 text-xs rounded-full theme-accent-badge font-medium">
                   {post.category}
                 </span>
 

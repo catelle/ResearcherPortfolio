@@ -11,7 +11,7 @@ export function HeroSection() {
       {/* Subtle background accent - only in dark mode */}
       <div className="absolute inset-0 dark:opacity-100 opacity-0">
         <motion.div
-          className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#a855f7] rounded-full opacity-10 blur-3xl"
+          className="absolute top-1/4 right-1/4 w-96 h-96 theme-accent-line rounded-full opacity-10 blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.1, 0.15, 0.1],
@@ -46,7 +46,7 @@ export function HeroSection() {
 
             <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-foreground">
               <span className="block">{hero.titlePrefix}</span>
-              <span className="block text-[#a855f7]">
+              <span className="block theme-accent-text">
                 {hero.titleAccent}
               </span>
             </h1>
@@ -64,7 +64,7 @@ export function HeroSection() {
                 href="#projects"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-[#a855f7] text-white rounded-lg font-medium shadow-lg hover:bg-[#9333ea] transition-colors"
+                className="px-8 py-4 theme-accent-button rounded-lg font-medium shadow-lg transition-colors"
               >
                 {hero.primaryCtaLabel}
               </motion.a>
@@ -87,7 +87,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="relative"
           >
-            <div className="relative rounded-2xl overflow-hidden border-2 border-[#a855f7]/30">
+            <div className="relative rounded-2xl overflow-hidden border-2 theme-accent-panel">
               <img
                 src={hero.portraitUrl}
                 alt={hero.portraitAlt}

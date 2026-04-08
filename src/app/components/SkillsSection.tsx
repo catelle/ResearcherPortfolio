@@ -21,7 +21,7 @@ export function SkillsSection() {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             {skills.intro}
           </p>
-          <div className="w-24 h-1 bg-[#a855f7] mx-auto mt-6 rounded-full" />
+          <div className="w-24 h-1 theme-accent-line mx-auto mt-6 rounded-full" />
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -34,7 +34,7 @@ export function SkillsSection() {
               transition={{ duration: 0.6, delay: 0.1 * categoryIndex }}
               className="group"
             >
-              <div className="h-full p-8 rounded-2xl bg-card border border-border hover:border-[#a855f7]/50 transition-all duration-300 shadow-sm">
+              <div className="h-full p-8 rounded-2xl bg-card border border-border theme-accent-hover-border transition-all duration-300 shadow-sm">
                 <div className="flex items-center mb-6">
                   <div
                     className="w-3 h-3 rounded-full mr-3"

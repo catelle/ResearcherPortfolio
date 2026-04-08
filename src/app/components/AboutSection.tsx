@@ -19,7 +19,7 @@ export function AboutSection() {
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
             {about.heading}
           </h2>
-          <div className="w-24 h-1 bg-[#a855f7] mx-auto rounded-full" />
+          <div className="w-24 h-1 theme-accent-line mx-auto rounded-full" />
         </motion.div>
 
         <motion.div
@@ -52,9 +52,9 @@ export function AboutSection() {
               whileHover={{ y: -8 }}
               className="group relative"
             >
-              <div className="relative h-full p-8 rounded-2xl bg-card border border-border hover:border-[#a855f7]/50 transition-all duration-300 shadow-sm">
-                <div className="w-14 h-14 mb-6 rounded-xl bg-[#a855f7] flex items-center justify-center">
-                  <Icon className="w-7 h-7 text-white" />
+              <div className="relative h-full p-8 rounded-2xl bg-card border border-border theme-accent-hover-border transition-all duration-300 shadow-sm">
+                <div className="w-14 h-14 mb-6 rounded-xl theme-accent-solid flex items-center justify-center">
+                  <Icon className="w-7 h-7 text-current" />
                 </div>
                 
                 <h3 className="text-xl font-bold text-foreground mb-4">

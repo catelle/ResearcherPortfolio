@@ -87,7 +87,7 @@ export function Admin() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "text-[#a855f7] border-[#a855f7]"
+                    ? "theme-accent-tab"
                     : "text-muted-foreground border-transparent hover:text-foreground"
                 }`}
               >
