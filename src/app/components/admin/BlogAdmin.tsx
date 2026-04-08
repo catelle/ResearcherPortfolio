@@ -6,6 +6,14 @@ import {
   createContentItemId,
   type BlogPost,
 } from "../../lib/portfolio-content";
+import { ImageWithFallback } from "../figma/ImageWithFallback";
+
+function parseListInput(value: string) {
+  return value
+    .split(/\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
   const { content, saveContent, saving, uploading, uploadAsset } = useData();
@@ -21,6 +29,13 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
     date: "",
     readTime: "",
     image: "",
+    imageAlt: "",
+    author: "",
+    featured: false,
+    tags: "",
+    body: "",
+    keyTakeaways: "",
+    externalUrl: "",
   });
 
   useEffect(() => {
@@ -35,6 +50,13 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
       date: "",
       readTime: "",
       image: "",
+      imageAlt: "",
+      author: "",
+      featured: false,
+      tags: "",
+      body: "",
+      keyTakeaways: "",
+      externalUrl: "",
     });
     setEditingPost(null);
     setImageFile(null);
@@ -82,19 +104,21 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
       imageUrl = uploadResult.url;
     }
 
-    if (!imageUrl) {
-      setFeedback("Add a blog image URL or upload an image file before saving.");
-      return;
-    }
-
     const nextPost: BlogPost = {
       id: editingPost?.id ?? createContentItemId("blog"),
-      title: formData.title,
-      excerpt: formData.excerpt,
-      category: formData.category,
-      date: formData.date,
-      readTime: formData.readTime,
+      title: formData.title.trim(),
+      excerpt: formData.excerpt.trim(),
+      category: formData.category.trim(),
+      date: formData.date.trim(),
+      readTime: formData.readTime.trim(),
       image: imageUrl,
+      imageAlt: formData.imageAlt.trim(),
+      author: formData.author.trim(),
+      featured: formData.featured,
+      tags: parseListInput(formData.tags),
+      body: formData.body.trim(),
+      keyTakeaways: parseListInput(formData.keyTakeaways),
+      externalUrl: formData.externalUrl.trim(),
     };
 
     const nextSection = {
@@ -103,7 +127,7 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
         ? section.posts.map((item) =>
             item.id === editingPost.id ? nextPost : item,
           )
-        : [...section.posts, nextPost],
+        : [nextPost, ...section.posts],
     };
 
     const result = await persistSection(
@@ -138,8 +162,8 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
           <div>
             <h2 className="text-3xl font-bold text-foreground">Manage Blog</h2>
             <p className="text-muted-foreground mt-2">
-              Curate blog cards and adjust the section copy shown on the
-              homepage.
+              Keep homepage highlights short, while storing the full article copy
+              and supporting details for the blog detail pages.
             </p>
           </div>
 
@@ -163,6 +187,30 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
               disabled={!canEdit}
               className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
               placeholder="Section intro"
+            />
+            <input
+              type="number"
+              min={1}
+              value={section.previewCount}
+              onChange={(event) =>
+                setSection({
+                  ...section,
+                  previewCount: Number(event.target.value) || 1,
+                })
+              }
+              disabled={!canEdit}
+              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
+              placeholder="Homepage preview count"
+            />
+            <input
+              type="text"
+              value={section.viewAllLabel}
+              onChange={(event) =>
+                setSection({ ...section, viewAllLabel: event.target.value })
+              }
+              disabled={!canEdit}
+              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
+              placeholder="View all label"
             />
           </div>
         </div>
@@ -198,7 +246,7 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-card border border-border rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-card border border-border rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-foreground">
@@ -214,29 +262,43 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
             </div>
 
             <form onSubmit={handlePostSubmit} className="space-y-5">
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(event) =>
-                  setFormData({ ...formData, title: event.target.value })
-                }
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                placeholder="Post title"
-                required
-              />
+              <div className="grid md:grid-cols-2 gap-5">
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(event) =>
+                    setFormData({ ...formData, title: event.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                  placeholder="Post title"
+                  required
+                />
+
+                <label className="flex items-center gap-3 rounded-lg bg-background border border-border px-4 py-3 text-sm text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={formData.featured}
+                    onChange={(event) =>
+                      setFormData({ ...formData, featured: event.target.checked })
+                    }
+                    className="h-4 w-4"
+                  />
+                  Featured article
+                </label>
+              </div>
 
               <textarea
                 value={formData.excerpt}
                 onChange={(event) =>
                   setFormData({ ...formData, excerpt: event.target.value })
                 }
-                rows={4}
+                rows={3}
                 className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                placeholder="Post excerpt"
+                placeholder="Short excerpt"
                 required
               />
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <input
                   type="text"
                   value={formData.category}
@@ -245,6 +307,16 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                   }
                   className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
                   placeholder="Category"
+                  required
+                />
+                <input
+                  type="text"
+                  value={formData.date}
+                  onChange={(event) =>
+                    setFormData({ ...formData, date: event.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                  placeholder="April 8, 2026"
                   required
                 />
                 <input
@@ -259,28 +331,69 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                 />
               </div>
 
-              <input
-                type="text"
-                value={formData.date}
+              <div className="grid md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  value={formData.author}
+                  onChange={(event) =>
+                    setFormData({ ...formData, author: event.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                  placeholder="Author"
+                />
+                <input
+                  type="text"
+                  value={formData.tags}
+                  onChange={(event) =>
+                    setFormData({ ...formData, tags: event.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                  placeholder="Tags separated by commas or new lines"
+                />
+              </div>
+
+              <textarea
+                value={formData.body}
                 onChange={(event) =>
-                  setFormData({ ...formData, date: event.target.value })
+                  setFormData({ ...formData, body: event.target.value })
                 }
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                placeholder="April 8, 2026"
-                required
+                rows={8}
+                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
+                placeholder="Full article body for the detail page"
               />
 
-              <input
-                type="url"
-                value={formData.image}
+              <textarea
+                value={formData.keyTakeaways}
                 onChange={(event) =>
-                  setFormData({ ...formData, image: event.target.value })
+                  setFormData({ ...formData, keyTakeaways: event.target.value })
                 }
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                placeholder="https://example.com/image.jpg"
+                rows={4}
+                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
+                placeholder="Key takeaways separated by commas or new lines"
               />
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <input
+                  type="url"
+                  value={formData.image}
+                  onChange={(event) =>
+                    setFormData({ ...formData, image: event.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                  placeholder="Image URL"
+                />
+                <input
+                  type="text"
+                  value={formData.imageAlt}
+                  onChange={(event) =>
+                    setFormData({ ...formData, imageAlt: event.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                  placeholder="Image alt text"
+                />
+              </div>
               <p className="text-xs text-muted-foreground">
-                Paste an image URL, or upload a blog image file below.
+                Paste an image URL, or upload an image file below.
               </p>
 
               <div>
@@ -297,15 +410,19 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                   className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none file:mr-4 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium"
                 />
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Optional. If a file is selected, it will be uploaded to
-                  Supabase Storage and used instead of the pasted URL.
+                  Optional. If a file is selected, it will replace the pasted URL.
                 </p>
-                {imageFile ? (
-                  <p className="mt-2 text-xs text-foreground">
-                    Selected file: {imageFile.name}
-                  </p>
-                ) : null}
               </div>
+
+              <input
+                type="url"
+                value={formData.externalUrl}
+                onChange={(event) =>
+                  setFormData({ ...formData, externalUrl: event.target.value })
+                }
+                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                placeholder="External article URL"
+              />
 
               <div className="flex gap-3">
                 <motion.button
@@ -319,9 +436,9 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                     ? "Uploading..."
                     : saving
                       ? "Syncing..."
-                    : editingPost
-                      ? "Update Post"
-                      : "Add Post"}
+                      : editingPost
+                        ? "Update Post"
+                        : "Add Post"}
                 </motion.button>
                 <motion.button
                   type="button"
@@ -344,7 +461,20 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
             key={post.id}
             className="rounded-xl bg-card border border-border overflow-hidden"
           >
-            <img src={post.image} alt={post.title} className="w-full h-40 object-cover" />
+            <div className="relative h-44 bg-muted">
+              {post.image ? (
+                <ImageWithFallback
+                  src={post.image}
+                  alt={post.imageAlt || post.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : null}
+              {post.featured ? (
+                <span className="absolute top-4 right-4 px-3 py-1 text-xs rounded-full theme-accent-badge font-medium">
+                  Featured
+                </span>
+              ) : null}
+            </div>
             <div className="p-5 space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <span className="px-3 py-1 text-xs rounded-full theme-accent-badge font-medium">
@@ -363,6 +493,13 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                         date: post.date,
                         readTime: post.readTime,
                         image: post.image,
+                        imageAlt: post.imageAlt,
+                        author: post.author,
+                        featured: post.featured,
+                        tags: post.tags.join(", "),
+                        body: post.body,
+                        keyTakeaways: post.keyTakeaways.join(", "),
+                        externalUrl: post.externalUrl,
                       });
                       setImageFile(null);
                       setIsFormOpen(true);
@@ -386,6 +523,7 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
               <h3 className="font-bold text-foreground line-clamp-2">{post.title}</h3>
               <p className="text-xs text-muted-foreground">
                 {post.date} • {post.readTime}
+                {post.author ? ` • ${post.author}` : ""}
               </p>
               <p className="text-sm text-muted-foreground line-clamp-3">
                 {post.excerpt}

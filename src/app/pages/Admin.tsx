@@ -10,6 +10,7 @@ import { SkillsAdmin } from "../components/admin/SkillsAdmin";
 import { BlogAdmin } from "../components/admin/BlogAdmin";
 import { AboutAdmin } from "../components/admin/AboutAdmin";
 import { VisionAdmin } from "../components/admin/VisionAdmin";
+import { RecommendationsAdmin } from "../components/admin/RecommendationsAdmin";
 import { LoginPanel } from "../components/admin/LoginPanel";
 
 export function Admin() {
@@ -17,7 +18,7 @@ export function Admin() {
   const { meta, loading, error, statusMessage } = useData();
   const { isConfigured, loading: authLoading, session, user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<
-    "site" | "projects" | "skills" | "blog" | "about" | "vision"
+    "site" | "projects" | "skills" | "blog" | "recommendations" | "about" | "vision"
   >("site");
 
   const tabs = [
@@ -25,6 +26,7 @@ export function Admin() {
     { id: "projects" as const, label: "Projects" },
     { id: "skills" as const, label: "Skills" },
     { id: "blog" as const, label: "Blog" },
+    { id: "recommendations" as const, label: "Feedback" },
     { id: "about" as const, label: "About" },
     { id: "vision" as const, label: "Vision" },
   ];
@@ -149,6 +151,9 @@ export function Admin() {
           {activeTab === "projects" && <ProjectsAdmin canEdit={canEdit} />}
           {activeTab === "skills" && <SkillsAdmin canEdit={canEdit} />}
           {activeTab === "blog" && <BlogAdmin canEdit={canEdit} />}
+          {activeTab === "recommendations" && (
+            <RecommendationsAdmin canEdit={canEdit} />
+          )}
           {activeTab === "about" && <AboutAdmin canEdit={canEdit} />}
           {activeTab === "vision" && <VisionAdmin canEdit={canEdit} />}
         </div>

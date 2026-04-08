@@ -3,11 +3,91 @@ import { motion } from "motion/react";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
 import { useData } from "../../context/DataContext";
 import {
+  countryMapOptions,
+  getCountryMapDisplayName,
+} from "../../lib/country-map-data";
+import {
   createContentItemId,
   socialIconOptions,
+  type FormCardEffectStyle,
+  type SectionOrbitingBackgrounds,
+  type SectionBackgroundStyle,
+  type SiteCursorStyle,
   type SocialLink,
 } from "../../lib/portfolio-content";
 import { normalizeThemeAccentColor } from "../../lib/theme-accent";
+
+function parseLineList(value: string) {
+  return value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+const cursorStyleOptions: Array<{
+  value: SiteCursorStyle;
+  label: string;
+  description: string;
+}> = [
+  {
+    value: "default",
+    label: "Default cursor",
+    description: "Keep the standard browser pointer.",
+  },
+  {
+    value: "accent-dot",
+    label: "Accent dot",
+    description: "Small animated accent follower.",
+  },
+  {
+    value: "ring",
+    label: "Accent ring",
+    description: "Soft ring with a glowing center.",
+  },
+  {
+    value: "heart",
+    label: "Heart pointer",
+    description: "Rounded pointer with a pulsing heart.",
+  },
+  {
+    value: "emoji",
+    label: "Emoji pointer",
+    description: "Playful animated emoji follower.",
+  },
+];
+
+const orbitingSectionOptions: Array<{
+  key: keyof SectionOrbitingBackgrounds;
+  label: string;
+}> = [
+  { key: "hero", label: "Hero" },
+  { key: "about", label: "About" },
+  { key: "projects", label: "Projects" },
+  { key: "skills", label: "Skills" },
+  { key: "blog", label: "Blog" },
+  { key: "recommendations", label: "Recommendations" },
+  { key: "vision", label: "Vision" },
+  { key: "contact", label: "Contact" },
+];
+
+const backgroundStyleOptions: Array<{
+  value: SectionBackgroundStyle;
+  label: string;
+}> = [
+  { value: "none", label: "None" },
+  { value: "orbit", label: "Orbiting icons" },
+  { value: "particles", label: "Particles" },
+  { value: "dotted-map", label: "Dotted map" },
+];
+
+const formCardEffectOptions: Array<{
+  value: FormCardEffectStyle;
+  label: string;
+}> = [
+  { value: "none", label: "None" },
+  { value: "border-beam", label: "Border beam" },
+  { value: "shine-border", label: "Shine border" },
+];
 
 export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
   const { content, saveContent, saving, uploading, uploadAsset } = useData();
@@ -154,7 +234,33 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
     await persistFormData(nextFormData, "Social link deleted successfully.");
   };
 
+  const updateSectionBackground = (
+    sectionKey: keyof SectionOrbitingBackgrounds,
+    changes: Partial<(typeof formData.site.sectionBackgrounds)[keyof SectionOrbitingBackgrounds]>,
+  ) => {
+    const nextSettings = {
+      ...formData.site.sectionBackgrounds[sectionKey],
+      ...changes,
+    };
+
+    setFormData({
+      ...formData,
+      site: {
+        ...formData.site,
+        sectionBackgrounds: {
+          ...formData.site.sectionBackgrounds,
+          [sectionKey]: nextSettings,
+        },
+        orbitingBackgrounds: {
+          ...formData.site.orbitingBackgrounds,
+          [sectionKey]: nextSettings.style === "orbit",
+        },
+      },
+    });
+  };
+
   const opportunitiesValue = formData.contact.opportunities.join("\n");
+  const terminalLinesValue = formData.hero.terminalLines.join("\n");
 
   return (
     <div className="max-w-5xl space-y-8">
@@ -281,6 +387,184 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
         </div>
 
         <div className="p-8 rounded-2xl bg-card border border-border space-y-6">
+          <div>
+            <h3 className="text-xl font-bold text-foreground">
+              Visual Effects
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Control optional presentation effects across the public website.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-6">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Cursor Style
+              </label>
+              <select
+                value={formData.site.cursorStyle}
+                onChange={(event) =>
+                  setFormData({
+                    ...formData,
+                    site: {
+                      ...formData.site,
+                      cursorStyle: event.target.value as SiteCursorStyle,
+                    },
+                  })
+                }
+                disabled={!canEdit}
+                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+              >
+                {cursorStyleOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {
+                  cursorStyleOptions.find(
+                    (option) => option.value === formData.site.cursorStyle,
+                  )?.description
+                }
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-background p-4">
+              <p className="text-sm font-medium text-foreground">
+                Section backgrounds
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Choose a background style for any section. Map mode lets you
+                point a country, and particles mode uses your chosen color.
+              </p>
+
+              <div className="mt-4 grid gap-4">
+                {orbitingSectionOptions.map((option) => {
+                  const sectionSettings =
+                    formData.site.sectionBackgrounds[option.key];
+                  const mapPlaceholder = getCountryMapDisplayName(
+                    sectionSettings.mapCountryCode,
+                  );
+
+                  return (
+                    <div
+                      key={option.key}
+                      className="rounded-xl border border-border bg-card p-4"
+                    >
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-foreground">
+                            {option.label}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Select which animated background appears here.
+                          </p>
+                        </div>
+
+                        <div className="w-full lg:max-w-xs">
+                          <select
+                            value={sectionSettings.style}
+                            onChange={(event) =>
+                              updateSectionBackground(option.key, {
+                                style: event.target.value as SectionBackgroundStyle,
+                              })
+                            }
+                            disabled={!canEdit}
+                            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                          >
+                            {backgroundStyleOptions.map((styleOption) => (
+                              <option
+                                key={styleOption.value}
+                                value={styleOption.value}
+                              >
+                                {styleOption.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      {sectionSettings.style === "particles" ? (
+                        <div className="mt-4 grid md:grid-cols-[minmax(0,1fr)_180px] gap-4 items-end">
+                          <div className="text-xs text-muted-foreground">
+                            Particle mode adds a floating dot field in the chosen
+                            color behind the section.
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-foreground mb-2">
+                              Particle Color
+                            </label>
+                            <input
+                              type="color"
+                              value={sectionSettings.particlesColor}
+                              onChange={(event) =>
+                                updateSectionBackground(option.key, {
+                                  particlesColor: event.target.value,
+                                })
+                              }
+                              disabled={!canEdit}
+                              className="h-11 w-full rounded-lg bg-background border border-border"
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {sectionSettings.style === "dotted-map" ? (
+                        <div className="mt-4 grid gap-4 md:grid-cols-2">
+                          <div>
+                            <label className="block text-xs font-medium text-foreground mb-2">
+                              Country
+                            </label>
+                            <select
+                              value={sectionSettings.mapCountryCode}
+                              onChange={(event) =>
+                                updateSectionBackground(option.key, {
+                                  mapCountryCode: event.target.value,
+                                })
+                              }
+                              disabled={!canEdit}
+                              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                            >
+                              {countryMapOptions.map((country) => (
+                                <option key={country.code} value={country.code}>
+                                  {country.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-medium text-foreground mb-2">
+                              Map Label
+                            </label>
+                            <input
+                              type="text"
+                              value={sectionSettings.mapLabel}
+                              onChange={(event) =>
+                                updateSectionBackground(option.key, {
+                                  mapLabel: event.target.value,
+                                })
+                              }
+                              disabled={!canEdit}
+                              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+                              placeholder={mapPlaceholder}
+                            />
+                            <p className="mt-2 text-xs text-muted-foreground">
+                              Leave blank to use the selected country name.
+                            </p>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-8 rounded-2xl bg-card border border-border space-y-6">
           <h3 className="text-xl font-bold text-foreground">Hero Section</h3>
 
           <div>
@@ -389,6 +673,82 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
               className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
             />
           </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Description Display
+              </label>
+              <select
+                value={formData.hero.descriptionDisplayMode}
+                onChange={(event) =>
+                  setFormData({
+                    ...formData,
+                    hero: {
+                      ...formData.hero,
+                      descriptionDisplayMode:
+                        event.target.value as typeof formData.hero.descriptionDisplayMode,
+                    },
+                  })
+                }
+                disabled={!canEdit}
+                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+              >
+                <option value="text">Standard text</option>
+                <option value="terminal">Animated terminal</option>
+              </select>
+            </div>
+
+            <div className="rounded-lg bg-background border border-border px-4 py-3 text-sm text-muted-foreground">
+              Standard text shows the current paragraph. Animated terminal shows
+              the script below with command-style typing.
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Terminal Script
+            </label>
+            <textarea
+              value={terminalLinesValue}
+              onChange={(event) =>
+                setFormData({
+                  ...formData,
+                  hero: {
+                    ...formData.hero,
+                    terminalLines: parseLineList(event.target.value),
+                  },
+                })
+              }
+              rows={6}
+              disabled={!canEdit}
+              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
+              placeholder="$ whoami&#10;Cybersecurity engineer and founder&#10;$ focus --today&#10;Building safer digital products for Africa"
+            />
+            <p className="mt-2 text-xs text-muted-foreground">
+              Put one terminal line per row. Lines starting with `$` are shown as
+              typed commands. Other lines appear as command output.
+            </p>
+          </div>
+
+          <label className="flex items-center gap-3 rounded-lg bg-background border border-border px-4 py-3 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={formData.hero.showSocialDock}
+              onChange={(event) =>
+                setFormData({
+                  ...formData,
+                  hero: {
+                    ...formData.hero,
+                    showSocialDock: event.target.checked,
+                  },
+                })
+              }
+              disabled={!canEdit}
+              className="h-4 w-4"
+            />
+            Show animated social dock under the portrait
+          </label>
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -572,6 +932,61 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
               disabled={!canEdit}
               className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
             />
+          </div>
+
+          <div className="grid md:grid-cols-[minmax(0,1fr)_180px] gap-6 items-end">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Contact Form Card Effect
+              </label>
+              <select
+                value={formData.contact.formCardEffect.style}
+                onChange={(event) =>
+                  setFormData({
+                    ...formData,
+                    contact: {
+                      ...formData.contact,
+                      formCardEffect: {
+                        ...formData.contact.formCardEffect,
+                        style: event.target.value as FormCardEffectStyle,
+                      },
+                    },
+                  })
+                }
+                disabled={!canEdit}
+                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
+              >
+                {formCardEffectOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Effect Color
+              </label>
+              <input
+                type="color"
+                value={formData.contact.formCardEffect.color}
+                onChange={(event) =>
+                  setFormData({
+                    ...formData,
+                    contact: {
+                      ...formData.contact,
+                      formCardEffect: {
+                        ...formData.contact.formCardEffect,
+                        color: event.target.value,
+                      },
+                    },
+                  })
+                }
+                disabled={!canEdit}
+                className="h-12 w-full rounded-lg bg-background border border-border"
+              />
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">

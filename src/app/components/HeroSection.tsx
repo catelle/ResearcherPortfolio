@@ -1,13 +1,24 @@
 import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { useData } from "../context/DataContext";
+import { HeroTerminal } from "./HeroTerminal";
+import { HeroSocialDock } from "./HeroSocialDock";
+import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function HeroSection() {
   const { content } = useData();
-  const { hero } = content;
+  const { hero, contact, site } = content;
+  const showTerminalDescription = hero.descriptionDisplayMode === "terminal";
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      <SectionVisualBackground
+        site={site}
+        sectionKey="hero"
+        align="right"
+        iconNames={["Shield", "Code", "Globe2", "Users", "Heart", "Zap"]}
+      />
+
       {/* Subtle background accent - only in dark mode */}
       <div className="absolute inset-0 dark:opacity-100 opacity-0">
         <motion.div
@@ -55,9 +66,18 @@ export function HeroSection() {
               {hero.role}
             </p>
 
-            <p className="text-lg text-muted-foreground mb-10 leading-relaxed max-w-xl">
-              {hero.description}
-            </p>
+            {showTerminalDescription ? (
+              <div className="mb-10">
+                <HeroTerminal
+                  lines={hero.terminalLines}
+                  fallbackText={hero.description}
+                />
+              </div>
+            ) : (
+              <p className="text-lg text-muted-foreground mb-10 leading-relaxed max-w-xl">
+                {hero.description}
+              </p>
+            )}
 
             <div className="flex flex-wrap gap-4">
               <motion.a
@@ -87,12 +107,18 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="relative"
           >
-            <div className="relative rounded-2xl overflow-hidden border-2 theme-accent-panel">
-              <img
-                src={hero.portraitUrl}
-                alt={hero.portraitAlt}
-                className="w-full h-auto aspect-[3/4] object-cover"
-              />
+            <div className="relative">
+              <div className="relative rounded-2xl overflow-hidden border-2 theme-accent-panel">
+                <img
+                  src={hero.portraitUrl}
+                  alt={hero.portraitAlt}
+                  className="w-full h-auto aspect-[3/4] object-cover"
+                />
+              </div>
+
+              {hero.showSocialDock ? (
+                <HeroSocialDock items={contact.socialLinks} />
+              ) : null}
             </div>
           </motion.div>
         </div>

@@ -1,14 +1,25 @@
 import { motion } from "motion/react";
-import { ExternalLink } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
+import { Link } from "react-router";
 import { useData } from "../context/DataContext";
-import { iconMap } from "../lib/icon-maps";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { getProjectHref } from "../lib/portfolio-content";
+import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function ProjectsSection() {
   const { content } = useData();
-  const { projects } = content;
+  const { projects, site } = content;
+  const previewItems = projects.items.slice(0, projects.previewCount);
 
   return (
     <section id="projects" className="relative py-32 bg-background">
+      <SectionVisualBackground
+        site={site}
+        sectionKey="projects"
+        align="right"
+        iconNames={["Target", "Zap", "TrendingUp", "Globe", "Code", "Brain"]}
+      />
+
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -27,85 +38,124 @@ export function ProjectsSection() {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {projects.items.map((project, index) => {
-            const IconComponent =
-              iconMap[project.icon as keyof typeof iconMap] ?? iconMap.Shield;
-            
-            return (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 * index }}
-                whileHover={{ y: -8 }}
-                className="group relative"
-              >
-                <div className="relative h-full p-8 rounded-2xl bg-card border border-border theme-accent-hover-border transition-all duration-300 shadow-sm">
-                  <div className="relative">
-                    {/* Icon and category */}
-                    <div className="flex items-start justify-between mb-6">
-                      <div 
-                        className="w-12 h-12 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: `${project.color}20` }}
-                      >
-                        <IconComponent className="w-6 h-6" style={{ color: project.color }} />
-                      </div>
-                      <ExternalLink className="w-5 h-5 text-muted-foreground group-hover-theme-accent-text transition-colors" />
-                    </div>
+          {previewItems.map((project, index) => (
+            <motion.article
+              key={project.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.08 * index }}
+              whileHover={{ y: -6 }}
+              className="group"
+            >
+              <div className="h-full overflow-hidden rounded-3xl bg-card border border-border theme-accent-hover-border transition-all duration-300 shadow-sm">
+                <div className="relative aspect-[16/10] bg-muted">
+                  <ImageWithFallback
+                    src={project.image}
+                    alt={project.imageAlt || project.title}
+                    className="w-full h-full object-cover"
+                  />
 
-                    <h3 className="text-2xl font-bold text-foreground mb-2">
-                      {project.title}
-                    </h3>
-
-                    <p className="text-sm theme-accent-text mb-6">
+                  <div className="absolute inset-x-0 top-0 flex items-center justify-between p-5">
+                    <span className="px-3 py-1 rounded-full text-xs font-medium theme-accent-badge">
                       {project.category}
-                    </p>
-
-                    {/* Problem */}
-                    <div className="mb-4">
-                      <h4 className="text-sm font-semibold text-muted-foreground mb-2">Problem</h4>
-                      <p className="text-foreground leading-relaxed">
-                        {project.problem}
-                      </p>
-                    </div>
-
-                    {/* Solution */}
-                    <div className="mb-4">
-                      <h4 className="text-sm font-semibold text-muted-foreground mb-2">Solution</h4>
-                      <p className="text-foreground leading-relaxed">
-                        {project.solution}
-                      </p>
-                    </div>
-
-                    {/* Tech Stack */}
-                    <div className="mb-4">
-                      <h4 className="text-sm font-semibold text-muted-foreground mb-2">Tech Stack</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {project.techStack.map((tech) => (
-                          <span
-                            key={tech}
-                            className="px-3 py-1 text-xs rounded-full bg-muted text-foreground border border-border"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Impact */}
-                    <div className="pt-4 border-t border-border">
-                      <h4 className="text-sm font-semibold theme-accent-text mb-2">Impact</h4>
-                      <p className="text-muted-foreground italic leading-relaxed">
-                        {project.impact}
-                      </p>
-                    </div>
+                    </span>
+                    {project.featured ? (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-background/85 text-foreground border border-border">
+                        Featured
+                      </span>
+                    ) : null}
                   </div>
                 </div>
-              </motion.div>
-            );
-          })}
+
+                <div className="p-7 space-y-5">
+                  <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    {project.year ? <span>{project.year}</span> : null}
+                    {project.client ? <span>{project.client}</span> : null}
+                    {project.role ? <span>{project.role}</span> : null}
+                  </div>
+
+                  <div>
+                    <h3 className="text-2xl font-bold text-foreground">
+                      {project.title}
+                    </h3>
+                    <p className="mt-3 text-muted-foreground leading-relaxed">
+                      {project.summary || project.problem}
+                    </p>
+                  </div>
+
+                  {project.techStack.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {project.techStack.slice(0, 4).map((tech) => (
+                        <span
+                          key={tech}
+                          className="px-3 py-1 text-xs rounded-full bg-muted text-foreground border border-border"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {project.impact ? (
+                    <p className="text-sm text-foreground/85 leading-relaxed border-l-2 theme-accent-border pl-4">
+                      {project.impact}
+                    </p>
+                  ) : null}
+
+                  <div className="flex items-center justify-between gap-4 pt-2">
+                    <Link
+                      to={getProjectHref(project)}
+                      className="inline-flex items-center gap-2 theme-accent-text font-medium"
+                    >
+                      View case study
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+
+                    {(project.demoUrl || project.repositoryUrl) ? (
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        {project.demoUrl ? (
+                          <a
+                            href={project.demoUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
+                          >
+                            Demo
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        ) : null}
+                        {project.repositoryUrl ? (
+                          <a
+                            href={project.repositoryUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
+                          >
+                            Repo
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            </motion.article>
+          ))}
         </div>
+
+        {projects.items.length > previewItems.length ? (
+          <div className="flex justify-center mt-12">
+            <Link
+              to="/projects"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-muted border border-border text-foreground hover:bg-accent transition-colors"
+            >
+              {projects.viewAllLabel}
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        ) : null}
       </div>
     </section>
   );

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "dev:server": "node --watch --watch-path=server --watch-path=.env --watch-path=.env.local --env-file=.env --env-file-if-exists=.env.local server/index.mjs",
+    "dev:server": "node --watch --watch-path=server --watch-path=src/app/lib/default-portfolio-content.json --watch-path=.env --watch-path=.env.local --env-file=.env --env-file-if-exists=.env.local server/index.mjs",
     "start": "node --env-file=.env --env-file-if-exists=.env.local server/index.mjs"
   },
   "dependencies": {

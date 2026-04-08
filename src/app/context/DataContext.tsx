@@ -11,6 +11,7 @@ import {
   getDefaultPortfolioContent,
   type ContentMeta,
   type PortfolioContent,
+  type RecommendationSubmissionInput,
   type SaveResult,
   type UploadResult,
 } from "../lib/portfolio-content";
@@ -27,6 +28,7 @@ interface DataContextType {
   loading: boolean;
   saving: boolean;
   uploading: boolean;
+  submittingRecommendation: boolean;
   error: string | null;
   statusMessage: string | null;
   clearStatusMessage: () => void;
@@ -37,9 +39,15 @@ interface DataContextType {
   ) => Promise<SaveResult>;
   uploadAsset: (
     file: File,
-    type: "profile" | "blog",
+    type: "profile" | "project" | "blog",
     successMessage?: string,
   ) => Promise<UploadResult>;
+  submitRecommendation: (
+    input: RecommendationSubmissionInput & {
+      photoFile: File | null;
+    },
+    successMessage?: string,
+  ) => Promise<SaveResult>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -53,6 +61,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [submittingRecommendation, setSubmittingRecommendation] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
@@ -95,7 +104,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/content");
+      const response = await fetch("/api/content", {
+        headers: session?.access_token
+          ? {
+              Authorization: `Bearer ${session.access_token}`,
+            }
+          : undefined,
+      });
       const payload = (await response.json()) as ContentResponse;
 
       if (!response.ok) {
@@ -121,7 +136,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void refreshContent();
-  }, []);
+  }, [session?.access_token]);
 
   const saveContent = async (
     updater: (current: PortfolioContent) => PortfolioContent,
@@ -197,7 +212,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const uploadAsset = async (
     file: File,
-    type: "profile" | "blog",
+    type: "profile" | "project" | "blog",
     successMessage = "Image uploaded successfully.",
   ): Promise<UploadResult> => {
     if (!meta.isSupabaseConfigured) {
@@ -275,6 +290,107 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const submitRecommendation = async (
+    input: RecommendationSubmissionInput & {
+      photoFile: File | null;
+    },
+    successMessage = content.recommendations.successMessage ||
+      "Thanks for sharing your feedback. It has been submitted for review.",
+  ): Promise<SaveResult> => {
+    if (!meta.isMongoConfigured) {
+      return {
+        success: false,
+        message:
+          "Recommendation submissions are unavailable until MongoDB is configured.",
+      };
+    }
+
+    if (!meta.isStorageConfigured) {
+      return {
+        success: false,
+        message:
+          "Recommendation submissions are unavailable until image storage is configured.",
+      };
+    }
+
+    if (!input.photoFile) {
+      return {
+        success: false,
+        message: "Add a small profile photo before submitting feedback.",
+      };
+    }
+
+    setSubmittingRecommendation(true);
+    setError(null);
+
+    try {
+      const data = await readFileAsBase64(input.photoFile);
+      const response = await fetch("/api/recommendations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: input.name,
+          role: input.role,
+          company: input.company,
+          text: input.text,
+          photoAlt: input.photoAlt,
+          photo: {
+            contentType: input.photoFile.type,
+            data,
+            fileName: input.photoFile.name,
+          },
+        }),
+      });
+
+      let payload: ContentResponse = {};
+
+      try {
+        payload = (await response.json()) as ContentResponse;
+      } catch {
+        payload = {};
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          payload.message || "Failed to submit recommendation feedback.",
+        );
+      }
+
+      if (payload.content) {
+        setContent(payload.content);
+      }
+
+      if (payload.meta) {
+        setMeta(payload.meta);
+      }
+
+      setStatusMessage(payload.message || successMessage);
+
+      return {
+        success: true,
+        message: payload.message || successMessage,
+      };
+    } catch (nextError) {
+      const message =
+        nextError instanceof TypeError
+          ? "Unable to reach the recommendation endpoint. Make sure the backend is running and restarted so the latest `/api/recommendations` route is available."
+          : nextError instanceof Error
+            ? nextError.message
+            : "Failed to submit recommendation feedback.";
+
+      setError(message);
+
+      return {
+        success: false,
+        message,
+      };
+    } finally {
+      setSubmittingRecommendation(false);
+    }
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -283,12 +399,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
         loading,
         saving,
         uploading,
+        submittingRecommendation,
         error,
         statusMessage,
         clearStatusMessage: () => setStatusMessage(null),
         refreshContent,
         saveContent,
         uploadAsset,
+        submitRecommendation,
       }}
     >
       {children}

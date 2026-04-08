@@ -1,11 +1,28 @@
 import { motion } from "motion/react";
 import { Heart, Settings } from "lucide-react";
-import { useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useData } from "../context/DataContext";
 
 export function Footer() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { content } = useData();
+  const isHomePage = location.pathname === "/";
+  const links = isHomePage
+    ? [
+        { label: "About", href: "#about" },
+        { label: "Projects", href: "#projects" },
+        { label: "Blog", href: "#blog" },
+        { label: "Feedback", href: "#recommendations" },
+        { label: "Contact", href: "#contact" },
+      ]
+    : [
+        { label: "Home", href: "/" },
+        { label: "Projects", href: "/projects" },
+        { label: "Blog", href: "/blog" },
+        { label: "Feedback", href: "/recommendations" },
+        { label: "Contact", href: "/#contact" },
+      ];
 
   return (
     <footer className="relative bg-muted border-t border-border py-12">
@@ -18,9 +35,9 @@ export function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-2xl font-bold theme-accent-text">
+            <Link to="/" className="text-2xl font-bold theme-accent-text">
               {content.site.brandName}
-            </p>
+            </Link>
           </motion.div>
 
           {/* Copyright */}
@@ -42,20 +59,17 @@ export function Footer() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex gap-6"
+            className="flex flex-wrap justify-center gap-6"
           >
-            <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
-              About
-            </a>
-            <a href="#projects" className="text-muted-foreground hover:text-foreground transition-colors">
-              Projects
-            </a>
-            <a href="#blog" className="text-muted-foreground hover:text-foreground transition-colors">
-              Blog
-            </a>
-            <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
-              Contact
-            </a>
+            {links.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
             <button
               onClick={() => navigate("/admin")}
               className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"

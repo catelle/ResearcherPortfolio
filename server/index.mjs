@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { randomUUID } from "node:crypto";
 import { promises as fs, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -115,6 +116,10 @@ async function readJsonBody(request, maxBytes = 1024 * 1024) {
 }
 
 async function getRequestUser(request) {
+  if (!isSupabaseConfigured()) {
+    return null;
+  }
+
   const authorization = request.headers.authorization;
 
   if (!authorization?.startsWith("Bearer ")) {
@@ -137,6 +142,22 @@ function buildContentMeta(record) {
   };
 }
 
+function getContentForAudience(content, includePendingRecommendations) {
+  if (includePendingRecommendations) {
+    return content;
+  }
+
+  return {
+    ...content,
+    recommendations: {
+      ...content.recommendations,
+      items: content.recommendations.items.filter(
+        (item) => item.status === "approved",
+      ),
+    },
+  };
+}
+
 async function getContentForResponse(content) {
   try {
     return await resolvePortfolioStorageContent(content);
@@ -146,9 +167,12 @@ async function getContentForResponse(content) {
   }
 }
 
-async function handleContentGet(response) {
+async function handleContentGet(request, response) {
   const record = await getPortfolioContentRecord();
-  const content = await getContentForResponse(record.content);
+  const user = await getRequestUser(request);
+  const content = await getContentForResponse(
+    getContentForAudience(record.content, Boolean(user)),
+  );
 
   sendJson(response, 200, {
     content,
@@ -224,6 +248,173 @@ async function handleContentPut(request, response) {
   }
 }
 
+function readTrimmedString(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function validateRecommendationPayload(body) {
+  const name = readTrimmedString(body?.name);
+  const role = readTrimmedString(body?.role);
+  const company = readTrimmedString(body?.company);
+  const text = readTrimmedString(body?.text);
+  const photoAlt = readTrimmedString(body?.photoAlt) || `Photo of ${name}`;
+
+  if (name.length < 2) {
+    return { error: "Name must be at least 2 characters long." };
+  }
+
+  if (role.length < 2) {
+    return { error: "Role must be at least 2 characters long." };
+  }
+
+  if (text.length < 24) {
+    return { error: "Feedback should be at least 24 characters long." };
+  }
+
+  if (text.length > 1200) {
+    return { error: "Feedback must be 1200 characters or fewer." };
+  }
+
+  if (!body?.photo || typeof body.photo !== "object") {
+    return { error: "A small profile photo is required." };
+  }
+
+  const contentType = readTrimmedString(body.photo.contentType);
+  const data = typeof body.photo.data === "string" ? body.photo.data.trim() : "";
+  const fileName = readTrimmedString(body.photo.fileName);
+
+  if (!contentType.startsWith("image/")) {
+    return { error: "Only image uploads are supported for recommendation photos." };
+  }
+
+  if (!data) {
+    return { error: "Recommendation photo data is missing." };
+  }
+
+  return {
+    payload: {
+      name,
+      role,
+      company,
+      text,
+      photoAlt,
+      contentType,
+      data,
+      fileName,
+    },
+  };
+}
+
+async function handleRecommendationPost(request, response) {
+  if (!isMongoConfigured()) {
+    sendJson(response, 503, {
+      message:
+        "Recommendation submissions are unavailable until MongoDB is configured.",
+    });
+    return;
+  }
+
+  if (!isSupabaseStorageConfigured()) {
+    sendJson(response, 503, {
+      message:
+        "Recommendation submissions are unavailable until image storage is configured.",
+    });
+    return;
+  }
+
+  let body;
+
+  try {
+    body = await readJsonBody(request, 8 * 1024 * 1024);
+  } catch (error) {
+    const statusCode =
+      error instanceof Error && "statusCode" in error && error.statusCode === 413
+        ? 413
+        : 400;
+
+    sendJson(response, statusCode, {
+      message:
+        error instanceof Error && "statusCode" in error && error.statusCode === 413
+          ? "Recommendation payload is too large."
+          : "Request body must be valid JSON.",
+    });
+    return;
+  }
+
+  const validation = validateRecommendationPayload(body);
+
+  if ("error" in validation) {
+    sendJson(response, 400, { message: validation.error });
+    return;
+  }
+
+  const buffer = Buffer.from(validation.payload.data, "base64");
+
+  if (!buffer.length) {
+    sendJson(response, 400, {
+      message: "Uploaded recommendation photo is empty.",
+    });
+    return;
+  }
+
+  if (buffer.length > 3 * 1024 * 1024) {
+    sendJson(response, 400, {
+      message: "Recommendation photos must be 3MB or smaller.",
+    });
+    return;
+  }
+
+  try {
+    const asset = await uploadImageAsset({
+      buffer,
+      contentType: validation.payload.contentType,
+      fileName: validation.payload.fileName,
+      folder: "recommendation-photos",
+    });
+
+    const record = await getPortfolioContentRecord();
+    const nextRecommendation = {
+      id: `recommendation-${randomUUID()}`,
+      name: validation.payload.name,
+      role: validation.payload.role,
+      company: validation.payload.company,
+      photoUrl: asset.reference,
+      photoAlt: validation.payload.photoAlt,
+      text: validation.payload.text,
+      createdAt: new Date().toISOString(),
+      featured: false,
+      status: "pending",
+    };
+
+    const nextContent = {
+      ...record.content,
+      recommendations: {
+        ...record.content.recommendations,
+        items: [nextRecommendation, ...record.content.recommendations.items],
+      },
+    };
+
+    const savedRecord = await savePortfolioContent(nextContent, "public-submission");
+    const content = await getContentForResponse(
+      getContentForAudience(savedRecord.content, false),
+    );
+
+    sendJson(response, 201, {
+      message:
+        "Thanks for sharing your feedback. It has been submitted for review.",
+      content,
+      meta: buildContentMeta(savedRecord),
+    });
+  } catch (error) {
+    sendJson(response, 500, {
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to submit recommendation feedback.",
+    });
+  }
+}
+
 async function handleUploadPost(request, response) {
   if (!isSupabaseConfigured()) {
     sendJson(response, 503, {
@@ -271,6 +462,7 @@ async function handleUploadPost(request, response) {
   const folderByType = {
     blog: "blog-images",
     profile: "profile-images",
+    project: "project-images",
   };
 
   const type = body?.type;
@@ -387,7 +579,7 @@ const server = createServer(async (request, response) => {
   }
 
   if (pathname === "/api/content" && request.method === "GET") {
-    await handleContentGet(response);
+    await handleContentGet(request, response);
     return;
   }
 
@@ -398,6 +590,11 @@ const server = createServer(async (request, response) => {
 
   if (pathname === "/api/uploads" && request.method === "POST") {
     await handleUploadPost(request, response);
+    return;
+  }
+
+  if (pathname === "/api/recommendations" && request.method === "POST") {
+    await handleRecommendationPost(request, response);
     return;
   }
 

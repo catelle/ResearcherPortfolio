@@ -3,7 +3,68 @@
     "brandName": "Portfolio",
     "footerPrefix": "© 2026 Built with",
     "footerHighlight": "for digital Africa",
-    "themeAccentColor": "#a855f7"
+    "themeAccentColor": "#a855f7",
+    "cursorStyle": "default",
+    "orbitingBackgrounds": {
+      "hero": false,
+      "about": false,
+      "projects": false,
+      "skills": false,
+      "blog": false,
+      "recommendations": false,
+      "vision": false,
+      "contact": false
+    },
+    "sectionBackgrounds": {
+      "hero": {
+        "style": "none",
+        "particlesColor": "#a855f7",
+        "mapCountryCode": "CM",
+        "mapLabel": ""
+      },
+      "about": {
+        "style": "none",
+        "particlesColor": "#a855f7",
+        "mapCountryCode": "CM",
+        "mapLabel": ""
+      },
+      "projects": {
+        "style": "none",
+        "particlesColor": "#a855f7",
+        "mapCountryCode": "CM",
+        "mapLabel": ""
+      },
+      "skills": {
+        "style": "none",
+        "particlesColor": "#a855f7",
+        "mapCountryCode": "CM",
+        "mapLabel": ""
+      },
+      "blog": {
+        "style": "none",
+        "particlesColor": "#a855f7",
+        "mapCountryCode": "CM",
+        "mapLabel": ""
+      },
+      "recommendations": {
+        "style": "none",
+        "particlesColor": "#a855f7",
+        "mapCountryCode": "CM",
+        "mapLabel": ""
+      },
+      "vision": {
+        "style": "none",
+        "particlesColor": "#a855f7",
+        "mapCountryCode": "CM",
+        "mapLabel": ""
+      },
+      "contact": {
+        "style": "none",
+        "particlesColor": "#a855f7",
+        "mapCountryCode": "CM",
+        "mapLabel": ""
+      }
+    }
   },
   "hero": {
     "eyebrow": "Cybersecurity • Software Development • Tech Founder",
@@ -11,6 +72,16 @@
     "titleAccent": "Digital Africa",
     "role": "Cybersecurity Engineer & Tech Founder",
     "description": "Blending cybersecurity expertise, full-stack development, and mission-driven entrepreneurship to create platforms that empower Africa digitally and economically.",
+    "descriptionDisplayMode": "text",
+    "terminalLines": [
+      "$ whoami",
+      "Cybersecurity engineer, full-stack builder, and tech founder",
+      "$ mission --current",
+      "Building safer and more empowering digital experiences for Africa",
+      "$ focus --today",
+      "Security, product strategy, and mission-driven execution"
+    ],
+    "showSocialDock": false,
     "primaryCtaLabel": "View Projects",
     "secondaryCtaLabel": "Work With Me",
     "portraitUrl": "https://images.unsplash.com/photo-1637173052677-bb39717a7a4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBhZnJpY2FuJTIwd29tYW4lMjB0ZWNoJTIwZXhlY3V0aXZlJTIwcG9ydHJhaXQlMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwxfHx8fDE3NzE4NDY5OTR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
@@ -43,13 +114,16 @@
   },
   "projects": {
     "heading": "Featured Projects",
-    "intro": "Building mission-driven platforms that solve real problems across cybersecurity, education, health, and culture",
+    "intro": "A curated snapshot of initiatives across cybersecurity, education, culture, and intelligent products. The homepage stays focused while the full archive can grow freely.",
+    "previewCount": 4,
+    "viewAllLabel": "View All Projects",
     "items": [
       {
         "id": "1",
         "icon": "Shield",
         "title": "Psycoti Platform",
         "category": "Cybersecurity • Social Impact",
+        "summary": "A reporting and support platform designed to help cybercrime victims access guidance, resources, and trusted escalation channels.",
         "problem": "Rising cybercrime victimization across Africa with limited resources for assistance and awareness.",
         "solution": "Digital platform providing cybercrime reporting, victim support, and educational resources to combat digital threats.",
         "techStack": [
@@ -58,14 +132,30 @@
           "PostgreSQL",
           "Security APIs"
         ],
-        "impact": "Empowering victims and building digital safety awareness across communities",
-        "color": "#a855f7"
+        "impact": "Empowering victims and building digital safety awareness across communities.",
+        "color": "#a855f7",
+        "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80",
+        "imageAlt": "Cybersecurity dashboard with glowing screens",
+        "year": "2026",
+        "client": "Psycoti Initiative",
+        "role": "Founder, Product Strategist, Full-Stack Builder",
+        "duration": "6 months",
+        "featured": true,
+        "details": "The platform was designed to lower the emotional and practical friction people experience after cyber incidents. It combines awareness content, reporting pathways, and response guidance into a single approachable product experience.",
+        "outcomes": [
+          "Created a clearer reporting journey for cybercrime victims.",
+          "Centralized response guidance and educational content.",
+          "Positioned digital safety support as a human-centered service."
+        ],
+        "demoUrl": "",
+        "repositoryUrl": ""
       },
       {
         "id": "2",
         "icon": "Heart",
         "title": "Psycoti Awareness Center",
         "category": "Non-Profit • Education",
+        "summary": "A community-led education initiative focused on practical digital safety training and cyber awareness for underserved audiences.",
         "problem": "Lack of accessible cybersecurity education and support systems in African communities.",
         "solution": "Association providing workshops, resources, and community programs to increase digital literacy and safety awareness.",
         "techStack": [
@@ -73,14 +163,30 @@
           "Educational Content",
           "Partnerships"
         ],
-        "impact": "Building grassroots digital safety knowledge across underserved populations",
-        "color": "#d4af37"
+        "impact": "Building grassroots digital safety knowledge across underserved populations.",
+        "color": "#d4af37",
+        "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80",
+        "imageAlt": "Workshop participants collaborating around a table",
+        "year": "2025",
+        "client": "Community Association",
+        "role": "Co-Founder and Program Lead",
+        "duration": "Ongoing",
+        "featured": true,
+        "details": "This work complements platform building by creating offline trust, education, and awareness loops. It turns technical knowledge into local-language, real-world learning moments.",
+        "outcomes": [
+          "Expanded cybersecurity awareness through workshops.",
+          "Created a bridge between technical knowledge and community action.",
+          "Strengthened credibility for future digital safety initiatives."
+        ],
+        "demoUrl": "",
+        "repositoryUrl": ""
       },
       {
         "id": "3",
         "icon": "Smartphone",
         "title": "4C Hair Care Platform",
         "category": "Digital Product • Culture",
+        "summary": "A mobile-first product concept centered on natural hair care education, community knowledge, and culturally relevant recommendations.",
         "problem": "Limited accessible information and community for natural African hair care and styling.",
         "solution": "Digital platform connecting users with hair care tips, product recommendations, and community support for 4C hair.",
         "techStack": [
@@ -88,14 +194,30 @@
           "Firebase",
           "Content Management"
         ],
-        "impact": "Celebrating African beauty and creating inclusive hair care resources",
-        "color": "#10b981"
+        "impact": "Celebrating African beauty and creating inclusive hair care resources.",
+        "color": "#10b981",
+        "image": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&q=80",
+        "imageAlt": "Portrait of woman with natural hair smiling",
+        "year": "2025",
+        "client": "Independent Product",
+        "role": "Product Designer and Builder",
+        "duration": "4 months",
+        "featured": false,
+        "details": "The concept explores how product education, community advice, and identity-affirming content can be packaged into a simple and useful digital experience.",
+        "outcomes": [
+          "Defined a clear product niche around 4C hair support.",
+          "Created a culturally specific content and product structure.",
+          "Validated the need for more inclusive beauty-tech resources."
+        ],
+        "demoUrl": "",
+        "repositoryUrl": ""
       },
       {
         "id": "4",
         "icon": "Brain",
         "title": "AI & Data Projects",
         "category": "Machine Learning • Analytics",
+        "summary": "A collection of experiments and practical tools using AI, forecasting, and data storytelling to support decision making.",
         "problem": "Need for intelligent data-driven solutions in African tech ecosystem.",
         "solution": "Streamlit applications and AI models for forecasting, analysis, and decision-making tools.",
         "techStack": [
@@ -104,14 +226,30 @@
           "TensorFlow",
           "Data Science"
         ],
-        "impact": "Leveraging AI to solve local challenges with global-standard tools",
-        "color": "#8b5cf6"
+        "impact": "Leveraging AI to solve local challenges with global-standard tools.",
+        "color": "#8b5cf6",
+        "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80",
+        "imageAlt": "AI visualization and data charts on screen",
+        "year": "2026",
+        "client": "R&D Lab",
+        "role": "ML Engineer and Analyst",
+        "duration": "Ongoing",
+        "featured": true,
+        "details": "These projects focus on useful AI rather than novelty alone: forecasting, summarizing, classifying, and visualizing in ways that support product and operational decisions.",
+        "outcomes": [
+          "Built rapid prototypes for data-heavy questions.",
+          "Used AI to shorten insight cycles for teams and founders.",
+          "Created reusable patterns for analytics tooling."
+        ],
+        "demoUrl": "",
+        "repositoryUrl": ""
       },
       {
         "id": "5",
         "icon": "TrendingUp",
         "title": "African Language & First Aid Education",
         "category": "EdTech • Health",
+        "summary": "A multilingual educational concept aimed at making emergency response knowledge accessible across more local contexts.",
         "problem": "Language barriers and limited access to critical first aid education in local contexts.",
         "solution": "Multilingual educational platform teaching first aid and emergency response in African languages.",
         "techStack": [
@@ -120,14 +258,33 @@
           "Video Content",
           "Progressive Web App"
         ],
-        "impact": "Democratizing life-saving knowledge across linguistic and geographic boundaries",
-        "color": "#ec4899"
+        "impact": "Democratizing life-saving knowledge across linguistic and geographic boundaries.",
+        "color": "#ec4899",
+        "image": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1200&q=80",
+        "imageAlt": "Medical learning materials on a table",
+        "year": "2026",
+        "client": "Education Prototype",
+        "role": "Founder and Product Architect",
+        "duration": "Concept Stage",
+        "featured": false,
+        "details": "The project explores how language inclusion can improve the usefulness of health education. The goal is not just content translation, but local understanding and confidence in emergencies.",
+        "outcomes": [
+          "Mapped multilingual delivery opportunities.",
+          "Defined a product direction for accessible health learning.",
+          "Connected education, language, and safety in one experience."
+        ],
+        "demoUrl": "",
+        "repositoryUrl": ""
       }
     ]
   },
   "skills": {
     "heading": "Technical Skills",
-    "intro": "A hybrid skillset combining security, development, and strategic thinking",
+    "intro": "A hybrid skillset combining security, development, AI, and product thinking. The homepage shows a practical preview while the full skills page can keep growing.",
+    "showSkillCloud": false,
+    "previewCategoryCount": 4,
+    "previewSkillsPerCategory": 6,
+    "viewAllLabel": "Explore Full Skill Map",
     "categories": [
       {
         "id": "1",
@@ -185,7 +342,9 @@
   },
   "blog": {
     "heading": "Blog & Insights",
-    "intro": "Thoughts on cybersecurity, innovation, and building technology for Africa",
+    "intro": "Recent writing and thinking on cybersecurity, innovation, AI, and building useful technology for African contexts.",
+    "previewCount": 3,
+    "viewAllLabel": "Read All Articles",
     "posts": [
       {
         "id": "1",
@@ -194,7 +353,22 @@
         "category": "Cybersecurity",
         "date": "February 15, 2026",
         "readTime": "8 min read",
-        "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80"
+        "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80",
+        "imageAlt": "Abstract cybersecurity illustration with blue light",
+        "author": "Catelle Ningha",
+        "featured": true,
+        "tags": [
+          "Cybersecurity",
+          "Africa",
+          "Digital Safety"
+        ],
+        "body": "Cybersecurity across African markets is shaped by rapid digital adoption, uneven security readiness, and a strong need for accessible education. The opportunity is not only to secure systems, but to build trust in digital participation itself.\n\nMore resilient infrastructure will come from combining policy, product design, and user-centered awareness. That means building safer defaults, creating clearer recovery paths, and investing in support systems for people affected by digital threats.",
+        "keyTakeaways": [
+          "Security maturity is developing unevenly across markets.",
+          "Education and incident support matter as much as tooling.",
+          "Safer digital participation depends on trust, not just compliance."
+        ],
+        "externalUrl": ""
       },
       {
         "id": "2",
@@ -203,7 +377,22 @@
         "category": "Entrepreneurship",
         "date": "February 8, 2026",
         "readTime": "6 min read",
-        "image": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&q=80"
+        "image": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&q=80",
+        "imageAlt": "Startup founders discussing strategy over laptops",
+        "author": "Catelle Ningha",
+        "featured": true,
+        "tags": [
+          "Startup",
+          "Impact",
+          "Leadership"
+        ],
+        "body": "Mission-driven startups require a careful balance between conviction and execution. The strongest products solve a real pain point, but they also respect the lived reality of their users and the operational complexity of the market.\n\nWhat keeps these startups healthy is clarity: clear user value, clear priorities, and clear trade-offs. Impact becomes more sustainable when product discipline matches the size of the vision.",
+        "keyTakeaways": [
+          "Mission alone does not replace product clarity.",
+          "Early-stage focus should stay tight and evidence-driven.",
+          "Trust and relevance are strategic assets in emerging markets."
+        ],
+        "externalUrl": ""
       },
       {
         "id": "3",
@@ -212,7 +401,22 @@
         "category": "Leadership",
         "date": "January 28, 2026",
         "readTime": "7 min read",
-        "image": "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800&q=80"
+        "image": "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=1200&q=80",
+        "imageAlt": "Woman speaking confidently in a collaborative office",
+        "author": "Catelle Ningha",
+        "featured": false,
+        "tags": [
+          "Women in Tech",
+          "Leadership",
+          "Africa"
+        ],
+        "body": "Breaking barriers in tech is rarely a single moment. It is a continuous practice of showing up, building credibility, and creating room for others while you do the work.\n\nRepresentation matters, but so do systems that make growth possible. The next generation benefits most when visibility is paired with access, mentorship, and the confidence to build ambitious things.",
+        "keyTakeaways": [
+          "Visibility should lead to access and opportunity.",
+          "Leadership grows through consistency, not a single milestone.",
+          "Building with others in mind strengthens the ecosystem."
+        ],
+        "externalUrl": ""
       },
       {
         "id": "4",
@@ -221,7 +425,22 @@
         "category": "Technology",
         "date": "January 20, 2026",
         "readTime": "9 min read",
-        "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80"
+        "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80",
+        "imageAlt": "Artificial intelligence concept art with data overlays",
+        "author": "Catelle Ningha",
+        "featured": true,
+        "tags": [
+          "AI",
+          "Machine Learning",
+          "Social Impact"
+        ],
+        "body": "AI becomes most useful when it is applied to real bottlenecks: forecasting demand, simplifying support, extracting signals from messy data, or expanding access to knowledge.\n\nThe strongest local AI work starts with grounded constraints. It asks what data is available, what decisions need support, and how people can actually trust and use the result.",
+        "keyTakeaways": [
+          "Useful AI begins with a concrete decision problem.",
+          "Local relevance matters more than trend chasing.",
+          "Trust, usability, and context should shape every model."
+        ],
+        "externalUrl": ""
       },
       {
         "id": "5",
@@ -230,7 +449,22 @@
         "category": "Product Strategy",
         "date": "January 12, 2026",
         "readTime": "10 min read",
-        "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
+        "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80",
+        "imageAlt": "Product analytics dashboard on laptop screen",
+        "author": "Catelle Ningha",
+        "featured": false,
+        "tags": [
+          "Product",
+          "Research",
+          "Emerging Markets"
+        ],
+        "body": "Products for emerging markets need more than localization. They require a deeper understanding of context: device realities, infrastructure limitations, trust patterns, and what success looks like for users.\n\nA strong framework starts with listening, narrows into practical use cases, and continuously checks whether the product still fits the environment it claims to serve.",
+        "keyTakeaways": [
+          "Context fit is a core product requirement.",
+          "Research must translate into operational design choices.",
+          "Launch is the start of adaptation, not the end of discovery."
+        ],
+        "externalUrl": ""
       },
       {
         "id": "6",
@@ -239,7 +473,22 @@
         "category": "Education",
         "date": "January 5, 2026",
         "readTime": "5 min read",
-        "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80"
+        "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80",
+        "imageAlt": "Students learning with laptops in a workshop setting",
+        "author": "Catelle Ningha",
+        "featured": false,
+        "tags": [
+          "Education",
+          "Cyber Awareness",
+          "Community"
+        ],
+        "body": "Digital safety education is one of the highest leverage investments in a fast-growing digital economy. Awareness changes behavior, and behavior often determines whether a threat becomes a crisis.\n\nEducation works best when it is continuous, contextual, and practical. People need examples they recognize, response steps they can follow, and support systems they can trust.",
+        "keyTakeaways": [
+          "Awareness is a practical layer of digital protection.",
+          "Education should be relevant, repeated, and actionable.",
+          "Communities need trusted pathways for both prevention and response."
+        ],
+        "externalUrl": ""
       }
     ]
   },
@@ -274,6 +523,60 @@
       }
     ]
   },
+  "recommendations": {
+    "heading": "Recommendations",
+    "intro": "Selected notes from collaborators, founders, and partners. Visitors can also leave a recommendation for review.",
+    "displayMode": "cards",
+    "previewCount": 3,
+    "viewAllLabel": "See More Recommendations",
+    "formHeading": "Worked With Me?",
+    "formIntro": "Share a short recommendation about the collaboration. Submissions are reviewed before they appear publicly.",
+    "submitLabel": "Submit Recommendation",
+    "photoHint": "Optional photo. If you skip it, the site will use your initials.",
+    "successMessage": "Thanks for sharing your feedback. It has been received and is awaiting review.",
+    "formCardEffect": {
+      "style": "none",
+      "color": "#a855f7"
+    },
+    "items": [
+      {
+        "id": "recommendation-1",
+        "name": "Amina K.",
+        "role": "Program Lead",
+        "company": "Community Safety Initiative",
+        "photoUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80",
+        "photoAlt": "Portrait of Amina K.",
+        "text": "She brings clarity to complex problems and balances empathy with execution. Working together felt structured, thoughtful, and genuinely mission-driven.",
+        "createdAt": "2026-02-18T09:00:00.000Z",
+        "featured": true,
+        "status": "approved"
+      },
+      {
+        "id": "recommendation-2",
+        "name": "Joseph M.",
+        "role": "Startup Advisor",
+        "company": "Founder Network",
+        "photoUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80",
+        "photoAlt": "Portrait of Joseph M.",
+        "text": "She moves seamlessly between strategy and implementation. The strongest part of the collaboration was how quickly ideas became practical, testable product decisions.",
+        "createdAt": "2026-03-01T11:30:00.000Z",
+        "featured": true,
+        "status": "approved"
+      },
+      {
+        "id": "recommendation-3",
+        "name": "Linda N.",
+        "role": "Product Collaborator",
+        "company": "Health Education Lab",
+        "photoUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80",
+        "photoAlt": "Portrait of Linda N.",
+        "text": "She asks the right questions early, especially around users, trust, and long-term impact. That made the project sharper from the beginning.",
+        "createdAt": "2026-03-17T08:15:00.000Z",
+        "featured": false,
+        "status": "approved"
+      }
+    ]
+  },
   "contact": {
     "heading": "Let's Collaborate",
     "intro": "Interested in working together on impactful projects? Reach out for collaborations, speaking opportunities, or partnerships.",
@@ -285,6 +588,10 @@
     "messagePlaceholder": "Tell me about your project or opportunity...",
     "submitLabel": "Send Message",
     "ctaTitle": "Open to Opportunities",
+    "formCardEffect": {
+      "style": "none",
+      "color": "#a855f7"
+    },
     "opportunities": [
       "Speaking engagements & conference talks",
       "Startup partnerships & investor collaborations",

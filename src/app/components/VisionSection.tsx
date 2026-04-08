@@ -1,13 +1,21 @@
 import { motion } from "motion/react";
 import { useData } from "../context/DataContext";
 import { iconMap } from "../lib/icon-maps";
+import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function VisionSection() {
   const { content } = useData();
-  const { vision } = content;
+  const { vision, site } = content;
 
   return (
     <section id="vision" className="relative py-32 bg-background">
+      <SectionVisualBackground
+        site={site}
+        sectionKey="vision"
+        align="right"
+        iconNames={["Target", "Zap", "Users", "Globe2", "Lightbulb", "Heart"]}
+      />
+
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

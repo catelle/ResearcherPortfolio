@@ -73,7 +73,7 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
         ? section.categories.map((item) =>
             item.id === editingCategory.id ? nextCategory : item,
           )
-        : [...section.categories, nextCategory],
+        : [nextCategory, ...section.categories],
     };
 
     const result = await persistSection(
@@ -134,7 +134,61 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
               className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
               placeholder="Section intro"
             />
+            <input
+              type="number"
+              min={1}
+              value={section.previewCategoryCount}
+              onChange={(event) =>
+                setSection({
+                  ...section,
+                  previewCategoryCount: Number(event.target.value) || 1,
+                })
+              }
+              disabled={!canEdit}
+              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
+              placeholder="Homepage category preview count"
+            />
+            <input
+              type="number"
+              min={1}
+              value={section.previewSkillsPerCategory}
+              onChange={(event) =>
+                setSection({
+                  ...section,
+                  previewSkillsPerCategory: Number(event.target.value) || 1,
+                })
+              }
+              disabled={!canEdit}
+              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
+              placeholder="Skills shown per category"
+            />
+            <input
+              type="text"
+              value={section.viewAllLabel}
+              onChange={(event) =>
+                setSection({ ...section, viewAllLabel: event.target.value })
+              }
+              disabled={!canEdit}
+              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none md:col-span-2"
+              placeholder="View all label"
+            />
           </div>
+
+          <label className="flex items-center gap-3 rounded-lg bg-card border border-border px-4 py-3 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={section.showSkillCloud}
+              onChange={(event) =>
+                setSection({
+                  ...section,
+                  showSkillCloud: event.target.checked,
+                })
+              }
+              disabled={!canEdit}
+              className="h-4 w-4"
+            />
+            Show the animated skill cloud above the skills list
+          </label>
         </div>
 
         <div className="flex gap-3">

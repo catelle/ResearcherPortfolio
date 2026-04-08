@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { Menu, X, Settings } from "lucide-react";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
-import { useNavigate, useLocation } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import { useData } from "../context/DataContext";
 
 export function Navigation() {
@@ -10,17 +10,24 @@ export function Navigation() {
   const navigate = useNavigate();
   const location = useLocation();
   const { content } = useData();
-
-  const navItems = [
-    { label: "About", href: "#about" },
-    { label: "Projects", href: "#projects" },
-    { label: "Skills", href: "#skills" },
-    { label: "Blog", href: "#blog" },
-    { label: "Vision", href: "#vision" },
-    { label: "Contact", href: "#contact" },
-  ];
-
   const isHomePage = location.pathname === "/";
+  const navItems = isHomePage
+    ? [
+        { label: "About", href: "#about" },
+        { label: "Projects", href: "#projects" },
+        { label: "Skills", href: "#skills" },
+        { label: "Blog", href: "#blog" },
+        { label: "Feedback", href: "#recommendations" },
+        { label: "Contact", href: "#contact" },
+      ]
+    : [
+        { label: "Home", href: "/" },
+        { label: "Projects", href: "/projects" },
+        { label: "Skills", href: "/skills" },
+        { label: "Blog", href: "/blog" },
+        { label: "Feedback", href: "/recommendations" },
+        { label: "Contact", href: "/#contact" },
+      ];
 
   return (
     <motion.nav
@@ -31,18 +38,14 @@ export function Navigation() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <motion.a
-            href="/"
-            whileHover={{ scale: 1.05 }}
-            className="text-2xl font-bold theme-accent-text"
-          >
-            {content.site.brandName}
-          </motion.a>
+          <motion.div whileHover={{ scale: 1.05 }}>
+            <Link to="/" className="text-2xl font-bold theme-accent-text">
+              {content.site.brandName}
+            </Link>
+          </motion.div>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            {isHomePage && navItems.map((item) => (
+            {navItems.map((item) => (
               <motion.a
                 key={item.label}
                 href={item.href}
@@ -52,20 +55,17 @@ export function Navigation() {
                 {item.label}
               </motion.a>
             ))}
-            {isHomePage && (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                onClick={() => navigate("/admin")}
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <Settings className="w-4 h-4" />
-                Admin
-              </motion.button>
-            )}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              onClick={() => navigate("/admin")}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Settings className="w-4 h-4" />
+              Admin
+            </motion.button>
             <ThemeToggle />
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center gap-3">
             <ThemeToggle />
             <button
@@ -77,7 +77,6 @@ export function Navigation() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -86,7 +85,7 @@ export function Navigation() {
             className="md:hidden pb-6"
           >
             <div className="flex flex-col gap-4">
-              {isHomePage && navItems.map((item) => (
+              {navItems.map((item) => (
                 <a
                   key={item.label}
                   href={item.href}
@@ -96,18 +95,16 @@ export function Navigation() {
                   {item.label}
                 </a>
               ))}
-              {isHomePage && (
-                <button
-                  onClick={() => {
-                    navigate("/admin");
-                    setIsOpen(false);
-                  }}
-                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-2"
-                >
-                  <Settings className="w-4 h-4" />
-                  Admin
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  navigate("/admin");
+                  setIsOpen(false);
+                }}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-2"
+              >
+                <Settings className="w-4 h-4" />
+                Admin
+              </button>
             </div>
           </motion.div>
         )}

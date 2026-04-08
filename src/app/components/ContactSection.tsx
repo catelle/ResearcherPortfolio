@@ -3,10 +3,12 @@ import { Send } from "lucide-react";
 import { useState } from "react";
 import { useData } from "../context/DataContext";
 import { iconMap } from "../lib/icon-maps";
+import { EffectCard } from "./EffectCard";
+import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function ContactSection() {
   const { content } = useData();
-  const { contact } = content;
+  const { contact, site } = content;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,6 +23,19 @@ export function ContactSection() {
 
   return (
     <section id="contact" className="relative py-32 bg-muted/30">
+      <SectionVisualBackground
+        site={site}
+        sectionKey="contact"
+        align="left"
+        iconNames={
+          contact.socialLinks.length > 0
+            ? contact.socialLinks.map(
+                (social) => social.icon as keyof typeof iconMap,
+              )
+            : ["Mail", "Linkedin", "Twitter", "Github"]
+        }
+      />
+
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -42,11 +57,15 @@ export function ContactSection() {
           {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="p-8 rounded-2xl bg-card border border-border shadow-sm">
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+            <EffectCard
+              effect={contact.formCardEffect}
+              className="rounded-2xl"
+              contentClassName="p-8"
+            >
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
@@ -103,7 +122,7 @@ export function ContactSection() {
                   {contact.submitLabel}
                 </motion.button>
               </form>
-            </div>
+            </EffectCard>
           </motion.div>
 
           {/* Contact Info & Social */}
