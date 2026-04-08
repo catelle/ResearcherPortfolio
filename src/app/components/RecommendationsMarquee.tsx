@@ -50,7 +50,7 @@ export function RecommendationsMarquee({
 
   return (
     <div className="relative flex w-full flex-col gap-4 overflow-hidden">
-      <Marquee pauseOnHover className="[--duration:60s] [--gap:0.75rem]">
+      <Marquee pauseOnHover className="[--duration:120s] [--gap:0.75rem]">
         {firstRow.map((item, index) => (
           <RecommendationQuoteCard
             key={`${item.id}-row-1-${index}`}
@@ -61,7 +61,7 @@ export function RecommendationsMarquee({
       </Marquee>
 
       {secondRow.length > 0 ? (
-        <Marquee reverse pauseOnHover className="[--duration:120s] [--gap:0.75rem]">
+        <Marquee reverse pauseOnHover className="[--duration:140s] [--gap:0.75rem]">
           {secondRow.map((item, index) => (
             <RecommendationQuoteCard
               key={`${item.id}-row-2-${index}`}
