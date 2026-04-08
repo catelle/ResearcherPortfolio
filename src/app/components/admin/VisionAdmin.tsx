@@ -3,10 +3,15 @@ import { motion } from "motion/react";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
 import { useData } from "../../context/DataContext";
 import {
+  buildLocalizedTextValue,
   createContentItemId,
+  getLocalizedText,
   visionIconOptions,
+  toLocalizedDraft,
+  type LocalizedText,
   type HighlightCard,
 } from "../../lib/portfolio-content";
+import { LocalizedFieldGroup } from "./LocalizedFields";
 
 export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
   const { content, saveContent, saving } = useData();
@@ -16,8 +21,8 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     icon: visionIconOptions[0],
-    title: "",
-    description: "",
+    title: { en: "", fr: "" } as LocalizedText,
+    description: { en: "", fr: "" } as LocalizedText,
   });
 
   useEffect(() => {
@@ -27,8 +32,8 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
   const resetForm = () => {
     setFormData({
       icon: visionIconOptions[0],
-      title: "",
-      description: "",
+      title: { en: "", fr: "" },
+      description: { en: "", fr: "" },
     });
     setEditingPillar(null);
     setIsFormOpen(false);
@@ -61,8 +66,8 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
     const nextPillar: HighlightCard = {
       id: editingPillar?.id ?? createContentItemId("vision-pillar"),
       icon: formData.icon,
-      title: formData.title,
-      description: formData.description,
+      title: buildLocalizedTextValue(formData.title),
+      description: buildLocalizedTextValue(formData.description),
     };
 
     const nextSection = {
@@ -127,37 +132,41 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
 
       <form id="vision-admin-form" onSubmit={handleSave} className="space-y-8">
         <div className="p-8 rounded-2xl bg-card border border-border space-y-6">
-          <input
-            type="text"
-            value={section.heading}
-            onChange={(event) =>
-              setSection({ ...section, heading: event.target.value })
+          <LocalizedFieldGroup
+            label="Section heading"
+            value={toLocalizedDraft(section.heading)}
+            onChange={(value) =>
+              setSection({ ...section, heading: buildLocalizedTextValue(value) })
             }
             disabled={!canEdit}
-            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-            placeholder="Section heading"
           />
 
-          <textarea
-            value={section.mainStatement}
-            onChange={(event) =>
-              setSection({ ...section, mainStatement: event.target.value })
+          <LocalizedFieldGroup
+            label="Main vision statement"
+            value={toLocalizedDraft(section.mainStatement)}
+            onChange={(value) =>
+              setSection({
+                ...section,
+                mainStatement: buildLocalizedTextValue(value),
+              })
             }
+            disabled={!canEdit}
+            multiline
             rows={3}
-            disabled={!canEdit}
-            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-            placeholder="Main vision statement"
           />
 
-          <textarea
-            value={section.subStatement}
-            onChange={(event) =>
-              setSection({ ...section, subStatement: event.target.value })
+          <LocalizedFieldGroup
+            label="Supporting statement"
+            value={toLocalizedDraft(section.subStatement)}
+            onChange={(value) =>
+              setSection({
+                ...section,
+                subStatement: buildLocalizedTextValue(value),
+              })
             }
-            rows={4}
             disabled={!canEdit}
-            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-            placeholder="Supporting statement"
+            multiline
+            rows={4}
           />
         </div>
 
@@ -216,26 +225,20 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
                   ))}
                 </select>
 
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Pillar title"
                   value={formData.title}
-                  onChange={(event) =>
-                    setFormData({ ...formData, title: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-                  placeholder="Pillar title"
-                  required
+                  onChange={(value) => setFormData({ ...formData, title: value })}
                 />
 
-                <textarea
+                <LocalizedFieldGroup
+                  label="Pillar description"
                   value={formData.description}
-                  onChange={(event) =>
-                    setFormData({ ...formData, description: event.target.value })
+                  onChange={(value) =>
+                    setFormData({ ...formData, description: value })
                   }
+                  multiline
                   rows={3}
-                  className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none resize-none"
-                  placeholder="Pillar description"
-                  required
                 />
 
                 <div className="flex gap-3">
@@ -275,7 +278,9 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm theme-accent-text">{pillar.icon}</p>
-                    <h4 className="font-semibold text-foreground">{pillar.title}</h4>
+                    <h4 className="font-semibold text-foreground">
+                      {getLocalizedText(pillar.title, "en")}
+                    </h4>
                   </div>
 
                   <div className="flex gap-2">
@@ -285,8 +290,8 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
                         setEditingPillar(pillar);
                         setFormData({
                           icon: pillar.icon as typeof formData.icon,
-                          title: pillar.title,
-                          description: pillar.description,
+                          title: toLocalizedDraft(pillar.title),
+                          description: toLocalizedDraft(pillar.description),
                         });
                         setIsFormOpen(true);
                       }}
@@ -306,7 +311,9 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
                   </div>
                 </div>
 
-                <p className="text-sm text-muted-foreground">{pillar.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {getLocalizedText(pillar.description, "en")}
+                </p>
               </div>
             ))}
           </div>

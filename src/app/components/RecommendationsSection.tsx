@@ -4,14 +4,17 @@ import { RecommendationForm } from "./RecommendationForm";
 import { RecommendationQuoteCard } from "./RecommendationQuoteCard";
 import { RecommendationsMarquee } from "./RecommendationsMarquee";
 import { useData } from "../context/DataContext";
+import { useLocale } from "../context/LocaleContext";
 import {
   getApprovedRecommendations,
   getFeaturedPreviewItems,
+  getLocalizedText,
 } from "../lib/portfolio-content";
 import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function RecommendationsSection() {
   const { content } = useData();
+  const { locale } = useLocale();
   const { recommendations, site } = content;
   const approvedItems = getApprovedRecommendations(recommendations.items);
   const orderedItems = [...approvedItems].sort(
@@ -41,10 +44,10 @@ export function RecommendationsSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            {recommendations.heading}
+            {getLocalizedText(recommendations.heading, locale)}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {recommendations.intro}
+            {getLocalizedText(recommendations.intro, locale)}
           </p>
           <div className="w-24 h-1 theme-accent-line mx-auto mt-6 rounded-full" />
         </motion.div>
@@ -59,15 +62,15 @@ export function RecommendationsSection() {
                   to="/recommendations"
                   className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-muted text-foreground hover:bg-accent transition-colors"
                 >
-                  {recommendations.viewAllLabel}
+                  {getLocalizedText(recommendations.viewAllLabel, locale)}
                 </Link>
               </div>
             ) : null}
 
             <div className="max-w-2xl mx-auto">
               <RecommendationForm
-                title={recommendations.formHeading}
-                intro={recommendations.formIntro}
+                title={getLocalizedText(recommendations.formHeading, locale)}
+                intro={getLocalizedText(recommendations.formIntro, locale)}
               />
             </div>
           </div>
@@ -92,15 +95,15 @@ export function RecommendationsSection() {
                     to="/recommendations"
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-muted text-foreground hover:bg-accent transition-colors"
                   >
-                    {recommendations.viewAllLabel}
+                    {getLocalizedText(recommendations.viewAllLabel, locale)}
                   </Link>
                 </div>
               ) : null}
             </div>
 
             <RecommendationForm
-              title={recommendations.formHeading}
-              intro={recommendations.formIntro}
+              title={getLocalizedText(recommendations.formHeading, locale)}
+              intro={getLocalizedText(recommendations.formIntro, locale)}
             />
           </div>
         )}

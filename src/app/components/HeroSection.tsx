@@ -1,12 +1,15 @@
 import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { useData } from "../context/DataContext";
+import { useLocale } from "../context/LocaleContext";
+import { getLocalizedText, getLocalizedTextList } from "../lib/portfolio-content";
 import { HeroTerminal } from "./HeroTerminal";
 import { HeroSocialDock } from "./HeroSocialDock";
 import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function HeroSection() {
   const { content } = useData();
+  const { locale } = useLocale();
   const { hero, contact, site } = content;
   const showTerminalDescription = hero.descriptionDisplayMode === "terminal";
 
@@ -51,31 +54,31 @@ export function HeroSection() {
               className="inline-block mb-6 px-4 py-2 rounded-full bg-muted border border-border"
             >
               <span className="text-sm tracking-wide text-muted-foreground">
-                {hero.eyebrow}
+                {getLocalizedText(hero.eyebrow, locale)}
               </span>
             </motion.div>
 
             <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-foreground">
-              <span className="block">{hero.titlePrefix}</span>
+              <span className="block">{getLocalizedText(hero.titlePrefix, locale)}</span>
               <span className="block theme-accent-text">
-                {hero.titleAccent}
+                {getLocalizedText(hero.titleAccent, locale)}
               </span>
             </h1>
 
             <p className="text-xl lg:text-2xl text-foreground mb-4 leading-relaxed">
-              {hero.role}
+              {getLocalizedText(hero.role, locale)}
             </p>
 
             {showTerminalDescription ? (
               <div className="mb-10">
                 <HeroTerminal
-                  lines={hero.terminalLines}
-                  fallbackText={hero.description}
+                  lines={getLocalizedTextList(hero.terminalLines, locale)}
+                  fallbackText={getLocalizedText(hero.description, locale)}
                 />
               </div>
             ) : (
               <p className="text-lg text-muted-foreground mb-10 leading-relaxed max-w-xl">
-                {hero.description}
+                {getLocalizedText(hero.description, locale)}
               </p>
             )}
 
@@ -86,7 +89,7 @@ export function HeroSection() {
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 theme-accent-button rounded-lg font-medium shadow-lg transition-colors"
               >
-                {hero.primaryCtaLabel}
+                {getLocalizedText(hero.primaryCtaLabel, locale)}
               </motion.a>
 
               <motion.a
@@ -95,7 +98,7 @@ export function HeroSection() {
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 bg-muted text-foreground rounded-lg font-medium border border-border hover:bg-accent transition-colors"
               >
-                {hero.secondaryCtaLabel}
+                {getLocalizedText(hero.secondaryCtaLabel, locale)}
               </motion.a>
             </div>
           </motion.div>
@@ -111,13 +114,13 @@ export function HeroSection() {
               <div className="relative rounded-2xl overflow-hidden border-2 theme-accent-panel">
                 <img
                   src={hero.portraitUrl}
-                  alt={hero.portraitAlt}
+                  alt={getLocalizedText(hero.portraitAlt, locale)}
                   className="w-full h-auto aspect-[3/4] object-cover"
                 />
               </div>
 
               {hero.showSocialDock ? (
-                <HeroSocialDock items={contact.socialLinks} />
+                <HeroSocialDock items={contact.socialLinks} locale={locale} />
               ) : null}
             </div>
           </motion.div>

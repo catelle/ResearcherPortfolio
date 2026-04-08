@@ -3,11 +3,18 @@ import { motion } from "motion/react";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
 import { useData } from "../../context/DataContext";
 import {
+  buildLocalizedListValue,
+  buildLocalizedTextValue,
   createContentItemId,
+  getLocalizedText,
   projectIconOptions,
+  toLocalizedDraft,
+  toLocalizedListDraft,
+  type LocalizedText,
   type Project,
 } from "../../lib/portfolio-content";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
+import { LocalizedFieldGroup } from "./LocalizedFields";
 
 function parseListInput(value: string) {
   return value
@@ -25,23 +32,23 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     icon: projectIconOptions[0],
-    title: "",
-    category: "",
-    summary: "",
-    problem: "",
-    solution: "",
+    title: { en: "", fr: "" } as LocalizedText,
+    category: { en: "", fr: "" } as LocalizedText,
+    summary: { en: "", fr: "" } as LocalizedText,
+    problem: { en: "", fr: "" } as LocalizedText,
+    solution: { en: "", fr: "" } as LocalizedText,
     techStack: "",
-    impact: "",
+    impact: { en: "", fr: "" } as LocalizedText,
     color: "#a855f7",
     image: "",
-    imageAlt: "",
+    imageAlt: { en: "", fr: "" } as LocalizedText,
     year: "",
-    client: "",
-    role: "",
-    duration: "",
+    client: { en: "", fr: "" } as LocalizedText,
+    role: { en: "", fr: "" } as LocalizedText,
+    duration: { en: "", fr: "" } as LocalizedText,
     featured: false,
-    details: "",
-    outcomes: "",
+    details: { en: "", fr: "" } as LocalizedText,
+    outcomes: { en: "", fr: "" } as LocalizedText,
     demoUrl: "",
     repositoryUrl: "",
   });
@@ -53,23 +60,23 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
   const resetForm = () => {
     setFormData({
       icon: projectIconOptions[0],
-      title: "",
-      category: "",
-      summary: "",
-      problem: "",
-      solution: "",
+      title: { en: "", fr: "" },
+      category: { en: "", fr: "" },
+      summary: { en: "", fr: "" },
+      problem: { en: "", fr: "" },
+      solution: { en: "", fr: "" },
       techStack: "",
-      impact: "",
+      impact: { en: "", fr: "" },
       color: "#a855f7",
       image: "",
-      imageAlt: "",
+      imageAlt: { en: "", fr: "" },
       year: "",
-      client: "",
-      role: "",
-      duration: "",
+      client: { en: "", fr: "" },
+      role: { en: "", fr: "" },
+      duration: { en: "", fr: "" },
       featured: false,
-      details: "",
-      outcomes: "",
+      details: { en: "", fr: "" },
+      outcomes: { en: "", fr: "" },
       demoUrl: "",
       repositoryUrl: "",
     });
@@ -122,23 +129,23 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
     const nextProject: Project = {
       id: editingProject?.id ?? createContentItemId("project"),
       icon: formData.icon,
-      title: formData.title.trim(),
-      category: formData.category.trim(),
-      summary: formData.summary.trim(),
-      problem: formData.problem.trim(),
-      solution: formData.solution.trim(),
+      title: buildLocalizedTextValue(formData.title),
+      category: buildLocalizedTextValue(formData.category),
+      summary: buildLocalizedTextValue(formData.summary),
+      problem: buildLocalizedTextValue(formData.problem),
+      solution: buildLocalizedTextValue(formData.solution),
       techStack: parseListInput(formData.techStack),
-      impact: formData.impact.trim(),
+      impact: buildLocalizedTextValue(formData.impact),
       color: formData.color,
       image: imageUrl,
-      imageAlt: formData.imageAlt.trim(),
+      imageAlt: buildLocalizedTextValue(formData.imageAlt),
       year: formData.year.trim(),
-      client: formData.client.trim(),
-      role: formData.role.trim(),
-      duration: formData.duration.trim(),
+      client: buildLocalizedTextValue(formData.client),
+      role: buildLocalizedTextValue(formData.role),
+      duration: buildLocalizedTextValue(formData.duration),
       featured: formData.featured,
-      details: formData.details.trim(),
-      outcomes: parseListInput(formData.outcomes),
+      details: buildLocalizedTextValue(formData.details),
+      outcomes: buildLocalizedListValue(formData.outcomes),
       demoUrl: formData.demoUrl.trim(),
       repositoryUrl: formData.repositoryUrl.trim(),
     };
@@ -190,25 +197,21 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              value={section.heading}
-              onChange={(event) =>
-                setSection({ ...section, heading: event.target.value })
+            <LocalizedFieldGroup
+              label="Section heading"
+              value={toLocalizedDraft(section.heading)}
+              onChange={(value) =>
+                setSection({ ...section, heading: buildLocalizedTextValue(value) })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Section heading"
             />
-            <input
-              type="text"
-              value={section.intro}
-              onChange={(event) =>
-                setSection({ ...section, intro: event.target.value })
+            <LocalizedFieldGroup
+              label="Section intro"
+              value={toLocalizedDraft(section.intro)}
+              onChange={(value) =>
+                setSection({ ...section, intro: buildLocalizedTextValue(value) })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Section intro"
             />
             <input
               type="number"
@@ -224,15 +227,16 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
               className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
               placeholder="Homepage preview count"
             />
-            <input
-              type="text"
-              value={section.viewAllLabel}
-              onChange={(event) =>
-                setSection({ ...section, viewAllLabel: event.target.value })
+            <LocalizedFieldGroup
+              label="View all label"
+              value={toLocalizedDraft(section.viewAllLabel)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  viewAllLabel: buildLocalizedTextValue(value),
+                })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="View all label"
             />
           </div>
         </div>
@@ -337,56 +341,44 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
               </div>
 
               <div className="grid md:grid-cols-2 gap-5">
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Project title"
                   value={formData.title}
-                  onChange={(event) =>
-                    setFormData({ ...formData, title: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Project title"
-                  required
+                  onChange={(value) => setFormData({ ...formData, title: value })}
                 />
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Category label"
                   value={formData.category}
-                  onChange={(event) =>
-                    setFormData({ ...formData, category: event.target.value })
+                  onChange={(value) =>
+                    setFormData({ ...formData, category: value })
                   }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Category label"
-                  required
                 />
               </div>
 
-              <textarea
+              <LocalizedFieldGroup
+                label="Short summary shown in cards and headers"
                 value={formData.summary}
-                onChange={(event) =>
-                  setFormData({ ...formData, summary: event.target.value })
-                }
+                onChange={(value) => setFormData({ ...formData, summary: value })}
+                multiline
                 rows={3}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                placeholder="Short summary shown in cards and headers"
               />
 
               <div className="grid md:grid-cols-2 gap-5">
-                <textarea
+                <LocalizedFieldGroup
+                  label="Problem statement"
                   value={formData.problem}
-                  onChange={(event) =>
-                    setFormData({ ...formData, problem: event.target.value })
-                  }
+                  onChange={(value) => setFormData({ ...formData, problem: value })}
+                  multiline
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                  placeholder="Problem statement"
                 />
-                <textarea
+                <LocalizedFieldGroup
+                  label="Solution summary"
                   value={formData.solution}
-                  onChange={(event) =>
-                    setFormData({ ...formData, solution: event.target.value })
+                  onChange={(value) =>
+                    setFormData({ ...formData, solution: value })
                   }
+                  multiline
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                  placeholder="Solution summary"
                 />
               </div>
 
@@ -400,35 +392,33 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
                   className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
                   placeholder="React, Node.js, MongoDB"
                 />
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Outcomes"
                   value={formData.outcomes}
-                  onChange={(event) =>
-                    setFormData({ ...formData, outcomes: event.target.value })
+                  onChange={(value) =>
+                    setFormData({ ...formData, outcomes: value })
                   }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Outcomes, separated by commas or new lines"
+                  multiline
+                  rows={4}
+                  englishPlaceholder={"Outcome one\nOutcome two"}
+                  frenchPlaceholder={"Resultat un\nResultat deux"}
                 />
               </div>
 
-              <textarea
+              <LocalizedFieldGroup
+                label="Impact statement"
                 value={formData.impact}
-                onChange={(event) =>
-                  setFormData({ ...formData, impact: event.target.value })
-                }
+                onChange={(value) => setFormData({ ...formData, impact: value })}
+                multiline
                 rows={3}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                placeholder="Impact statement"
               />
 
-              <textarea
+              <LocalizedFieldGroup
+                label="Long-form project details for the dedicated page"
                 value={formData.details}
-                onChange={(event) =>
-                  setFormData({ ...formData, details: event.target.value })
-                }
+                onChange={(value) => setFormData({ ...formData, details: value })}
+                multiline
                 rows={5}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                placeholder="Long-form project details for the dedicated page"
               />
 
               <div className="grid md:grid-cols-2 gap-5">
@@ -441,14 +431,10 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
                   className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
                   placeholder="Project image URL"
                 />
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Image alt text"
                   value={formData.imageAlt}
-                  onChange={(event) =>
-                    setFormData({ ...formData, imageAlt: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Image alt text"
+                  onChange={(value) => setFormData({ ...formData, imageAlt: value })}
                 />
               </div>
 
@@ -480,35 +466,25 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
                   className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
                   placeholder="Year"
                 />
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Client or organization"
                   value={formData.client}
-                  onChange={(event) =>
-                    setFormData({ ...formData, client: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Client or organization"
+                  onChange={(value) => setFormData({ ...formData, client: value })}
                 />
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Your role"
                   value={formData.role}
-                  onChange={(event) =>
-                    setFormData({ ...formData, role: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Your role"
+                  onChange={(value) => setFormData({ ...formData, role: value })}
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-5">
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Duration"
                   value={formData.duration}
-                  onChange={(event) =>
-                    setFormData({ ...formData, duration: event.target.value })
+                  onChange={(value) =>
+                    setFormData({ ...formData, duration: value })
                   }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Duration"
                 />
                 <input
                   type="url"
@@ -572,7 +548,10 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
               {project.image ? (
                 <ImageWithFallback
                   src={project.image}
-                  alt={project.imageAlt || project.title}
+                  alt={
+                    getLocalizedText(project.imageAlt, "en") ||
+                    getLocalizedText(project.title, "en")
+                  }
                   className="w-full h-full object-cover"
                 />
               ) : null}
@@ -586,10 +565,18 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
             <div className="p-6 space-y-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">{project.title}</h3>
-                  <p className="text-sm theme-accent-text">{project.category}</p>
+                  <h3 className="text-lg font-bold text-foreground">
+                    {getLocalizedText(project.title, "en")}
+                  </h3>
+                  <p className="text-sm theme-accent-text">
+                    {getLocalizedText(project.category, "en")}
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {[project.year, project.client, project.role]
+                    {[
+                      project.year,
+                      getLocalizedText(project.client, "en"),
+                      getLocalizedText(project.role, "en"),
+                    ]
                       .filter(Boolean)
                       .join(" • ")}
                   </p>
@@ -602,23 +589,23 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
                       setEditingProject(project);
                       setFormData({
                         icon: project.icon as typeof formData.icon,
-                        title: project.title,
-                        category: project.category,
-                        summary: project.summary,
-                        problem: project.problem,
-                        solution: project.solution,
+                        title: toLocalizedDraft(project.title),
+                        category: toLocalizedDraft(project.category),
+                        summary: toLocalizedDraft(project.summary),
+                        problem: toLocalizedDraft(project.problem),
+                        solution: toLocalizedDraft(project.solution),
                         techStack: project.techStack.join(", "),
-                        impact: project.impact,
+                        impact: toLocalizedDraft(project.impact),
                         color: project.color,
                         image: project.image,
-                        imageAlt: project.imageAlt,
+                        imageAlt: toLocalizedDraft(project.imageAlt),
                         year: project.year,
-                        client: project.client,
-                        role: project.role,
-                        duration: project.duration,
+                        client: toLocalizedDraft(project.client),
+                        role: toLocalizedDraft(project.role),
+                        duration: toLocalizedDraft(project.duration),
                         featured: project.featured,
-                        details: project.details,
-                        outcomes: project.outcomes.join(", "),
+                        details: toLocalizedDraft(project.details),
+                        outcomes: toLocalizedListDraft(project.outcomes),
                         demoUrl: project.demoUrl,
                         repositoryUrl: project.repositoryUrl,
                       });
@@ -642,7 +629,9 @@ export function ProjectsAdmin({ canEdit }: { canEdit: boolean }) {
               </div>
 
               <p className="text-sm text-muted-foreground">
-                {project.summary || project.problem || "No summary added yet."}
+                {getLocalizedText(project.summary, "en") ||
+                  getLocalizedText(project.problem, "en") ||
+                  "No summary added yet."}
               </p>
 
               <div className="flex flex-wrap gap-2">

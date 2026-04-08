@@ -7,12 +7,14 @@ import { RecommendationForm } from "../components/RecommendationForm";
 import { RecommendationQuoteCard } from "../components/RecommendationQuoteCard";
 import { RecommendationsMarquee } from "../components/RecommendationsMarquee";
 import { useData } from "../context/DataContext";
-import { getApprovedRecommendations } from "../lib/portfolio-content";
+import { useLocale } from "../context/LocaleContext";
+import { getApprovedRecommendations, getLocalizedText } from "../lib/portfolio-content";
 
 const PAGE_SIZE = 6;
 
 export function RecommendationsPage() {
   const { content } = useData();
+  const { locale, copy } = useLocale();
   const showMarquee = content.recommendations.displayMode === "marquee";
   const approvedItems = getApprovedRecommendations(content.recommendations.items);
   const orderedItems = [...approvedItems].sort(
@@ -25,9 +27,9 @@ export function RecommendationsPage() {
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Social Proof"
-        title={content.recommendations.heading}
-        description={content.recommendations.intro}
+        eyebrow={copy.pages.recommendationsEyebrow}
+        title={getLocalizedText(content.recommendations.heading, locale)}
+        description={getLocalizedText(content.recommendations.intro, locale)}
       />
 
       <section className="pb-24">
@@ -37,7 +39,7 @@ export function RecommendationsPage() {
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-10"
           >
             <ArrowLeft className="w-4 h-4" />
-            Home
+            {copy.common.home}
           </Link>
 
           {showMarquee ? (
@@ -46,7 +48,7 @@ export function RecommendationsPage() {
 
               {approvedItems.length === 0 ? (
                 <div className="rounded-3xl bg-card border border-border p-10 text-center text-muted-foreground">
-                  Approved recommendations will show up here once they are reviewed.
+                  {copy.recommendations.emptyState}
                 </div>
               ) : null}
 
@@ -58,10 +60,10 @@ export function RecommendationsPage() {
                     disabled={page === 1}
                     className="px-5 py-3 rounded-xl bg-card border border-border text-foreground disabled:opacity-50 transition-colors"
                   >
-                    Previous
+                    {copy.common.previous}
                   </button>
                   <span className="text-sm text-muted-foreground">
-                    Page {page} of {totalPages}
+                    {copy.common.page} {page} {copy.common.of} {totalPages}
                   </span>
                   <button
                     type="button"
@@ -71,15 +73,15 @@ export function RecommendationsPage() {
                     disabled={page === totalPages}
                     className="px-5 py-3 rounded-xl bg-card border border-border text-foreground disabled:opacity-50 transition-colors"
                   >
-                    Next
+                    {copy.common.next}
                   </button>
                 </div>
               ) : null}
 
               <div className="max-w-2xl mx-auto">
                 <RecommendationForm
-                  title={content.recommendations.formHeading}
-                  intro={content.recommendations.formIntro}
+                  title={getLocalizedText(content.recommendations.formHeading, locale)}
+                  intro={getLocalizedText(content.recommendations.formIntro, locale)}
                 />
               </div>
             </div>
@@ -92,7 +94,7 @@ export function RecommendationsPage() {
 
                 {approvedItems.length === 0 ? (
                   <div className="rounded-3xl bg-card border border-border p-10 text-center text-muted-foreground">
-                    Approved recommendations will show up here once they are reviewed.
+                    {copy.recommendations.emptyState}
                   </div>
                 ) : null}
 
@@ -104,10 +106,10 @@ export function RecommendationsPage() {
                       disabled={page === 1}
                       className="px-5 py-3 rounded-xl bg-card border border-border text-foreground disabled:opacity-50 transition-colors"
                     >
-                      Previous
+                      {copy.common.previous}
                     </button>
                     <span className="text-sm text-muted-foreground">
-                      Page {page} of {totalPages}
+                      {copy.common.page} {page} {copy.common.of} {totalPages}
                     </span>
                     <button
                       type="button"
@@ -117,15 +119,15 @@ export function RecommendationsPage() {
                       disabled={page === totalPages}
                       className="px-5 py-3 rounded-xl bg-card border border-border text-foreground disabled:opacity-50 transition-colors"
                     >
-                      Next
+                      {copy.common.next}
                     </button>
                   </div>
                 ) : null}
               </div>
 
               <RecommendationForm
-                title={content.recommendations.formHeading}
-                intro={content.recommendations.formIntro}
+                title={getLocalizedText(content.recommendations.formHeading, locale)}
+                intro={getLocalizedText(content.recommendations.formIntro, locale)}
               />
             </div>
           )}

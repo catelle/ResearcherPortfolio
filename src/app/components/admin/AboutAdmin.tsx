@@ -3,10 +3,15 @@ import { motion } from "motion/react";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
 import { useData } from "../../context/DataContext";
 import {
+  buildLocalizedTextValue,
   createContentItemId,
+  getLocalizedText,
   roleIconOptions,
+  toLocalizedDraft,
+  type LocalizedText,
   type HighlightCard,
 } from "../../lib/portfolio-content";
+import { LocalizedFieldGroup } from "./LocalizedFields";
 
 export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
   const { content, saveContent, saving } = useData();
@@ -16,8 +21,8 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     icon: roleIconOptions[0],
-    title: "",
-    description: "",
+    title: { en: "", fr: "" } as LocalizedText,
+    description: { en: "", fr: "" } as LocalizedText,
   });
 
   useEffect(() => {
@@ -27,8 +32,8 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
   const resetForm = () => {
     setFormData({
       icon: roleIconOptions[0],
-      title: "",
-      description: "",
+      title: { en: "", fr: "" },
+      description: { en: "", fr: "" },
     });
     setEditingRole(null);
     setIsFormOpen(false);
@@ -61,8 +66,8 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
     const nextRole: HighlightCard = {
       id: editingRole?.id ?? createContentItemId("about-role"),
       icon: formData.icon,
-      title: formData.title,
-      description: formData.description,
+      title: buildLocalizedTextValue(formData.title),
+      description: buildLocalizedTextValue(formData.description),
     };
 
     const nextSection = {
@@ -127,37 +132,43 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
 
       <form id="about-admin-form" onSubmit={handleSave} className="space-y-8">
         <div className="p-8 rounded-2xl bg-card border border-border space-y-6">
-          <input
-            type="text"
-            value={section.heading}
-            onChange={(event) =>
-              setSection({ ...section, heading: event.target.value })
+          <LocalizedFieldGroup
+            label="Section heading"
+            value={toLocalizedDraft(section.heading)}
+            onChange={(value) =>
+              setSection({ ...section, heading: buildLocalizedTextValue(value) })
             }
             disabled={!canEdit}
-            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-            placeholder="Section heading"
+            englishPlaceholder="About Me"
+            frenchPlaceholder="A propos de moi"
           />
 
-          <textarea
-            value={section.introduction}
-            onChange={(event) =>
-              setSection({ ...section, introduction: event.target.value })
+          <LocalizedFieldGroup
+            label="Introduction paragraph"
+            value={toLocalizedDraft(section.introduction)}
+            onChange={(value) =>
+              setSection({
+                ...section,
+                introduction: buildLocalizedTextValue(value),
+              })
             }
-            rows={5}
             disabled={!canEdit}
-            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-            placeholder="Introduction paragraph"
+            multiline
+            rows={5}
           />
 
-          <textarea
-            value={section.description}
-            onChange={(event) =>
-              setSection({ ...section, description: event.target.value })
+          <LocalizedFieldGroup
+            label="Description paragraph"
+            value={toLocalizedDraft(section.description)}
+            onChange={(value) =>
+              setSection({
+                ...section,
+                description: buildLocalizedTextValue(value),
+              })
             }
-            rows={5}
             disabled={!canEdit}
-            className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-            placeholder="Description paragraph"
+            multiline
+            rows={5}
           />
         </div>
 
@@ -216,26 +227,22 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
                   ))}
                 </select>
 
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Role title"
                   value={formData.title}
-                  onChange={(event) =>
-                    setFormData({ ...formData, title: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-                  placeholder="Role title"
-                  required
+                  onChange={(value) => setFormData({ ...formData, title: value })}
+                  englishPlaceholder="Cybersecurity Engineer"
+                  frenchPlaceholder="Ingenieure cybersécurité"
                 />
 
-                <textarea
+                <LocalizedFieldGroup
+                  label="Role description"
                   value={formData.description}
-                  onChange={(event) =>
-                    setFormData({ ...formData, description: event.target.value })
+                  onChange={(value) =>
+                    setFormData({ ...formData, description: value })
                   }
+                  multiline
                   rows={3}
-                  className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none resize-none"
-                  placeholder="Role description"
-                  required
                 />
 
                 <div className="flex gap-3">
@@ -275,7 +282,9 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm theme-accent-text">{role.icon}</p>
-                    <h4 className="font-semibold text-foreground">{role.title}</h4>
+                    <h4 className="font-semibold text-foreground">
+                      {getLocalizedText(role.title, "en")}
+                    </h4>
                   </div>
 
                   <div className="flex gap-2">
@@ -285,8 +294,8 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
                         setEditingRole(role);
                         setFormData({
                           icon: role.icon as typeof formData.icon,
-                          title: role.title,
-                          description: role.description,
+                          title: toLocalizedDraft(role.title),
+                          description: toLocalizedDraft(role.description),
                         });
                         setIsFormOpen(true);
                       }}
@@ -306,7 +315,9 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
                   </div>
                 </div>
 
-                <p className="text-sm text-muted-foreground">{role.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {getLocalizedText(role.description, "en")}
+                </p>
               </div>
             ))}
           </div>

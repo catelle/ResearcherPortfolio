@@ -9,6 +9,7 @@ import { useAuth } from "./AuthContext";
 import {
   defaultContentMeta,
   getDefaultPortfolioContent,
+  getLocalizedText,
   type ContentMeta,
   type PortfolioContent,
   type RecommendationSubmissionInput,
@@ -294,7 +295,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     input: RecommendationSubmissionInput & {
       photoFile: File | null;
     },
-    successMessage = content.recommendations.successMessage ||
+    successMessage = getLocalizedText(content.recommendations.successMessage, "en") ||
       "Thanks for sharing your feedback. It has been submitted for review.",
   ): Promise<SaveResult> => {
     if (!meta.isMongoConfigured) {

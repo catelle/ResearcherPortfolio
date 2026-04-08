@@ -7,15 +7,22 @@ import {
   getCountryMapDisplayName,
 } from "../../lib/country-map-data";
 import {
+  buildLocalizedListValue,
+  buildLocalizedTextValue,
   createContentItemId,
+  getLocalizedText,
   socialIconOptions,
+  toLocalizedDraft,
+  toLocalizedListDraft,
   type FormCardEffectStyle,
+  type LocalizedText,
   type SectionOrbitingBackgrounds,
   type SectionBackgroundStyle,
   type SiteCursorStyle,
   type SocialLink,
 } from "../../lib/portfolio-content";
 import { normalizeThemeAccentColor } from "../../lib/theme-accent";
+import { LocalizedFieldGroup } from "./LocalizedFields";
 
 function parseLineList(value: string) {
   return value
@@ -99,7 +106,7 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
   const [portraitFile, setPortraitFile] = useState<File | null>(null);
   const [socialForm, setSocialForm] = useState({
     icon: socialIconOptions[0],
-    label: "",
+    label: { en: "", fr: "" } as LocalizedText,
     href: "",
     color: "#a855f7",
   });
@@ -119,7 +126,7 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
   const resetSocialForm = () => {
     setSocialForm({
       icon: socialIconOptions[0],
-      label: "",
+      label: { en: "", fr: "" },
       href: "",
       color: "#a855f7",
     });
@@ -156,7 +163,7 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
     const nextSocialLink: SocialLink = {
       id: editingSocial?.id ?? createContentItemId("social"),
       icon: socialForm.icon,
-      label: socialForm.label,
+      label: buildLocalizedTextValue(socialForm.label),
       href: socialForm.href,
       color: socialForm.color,
     };
@@ -259,8 +266,8 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
     });
   };
 
-  const opportunitiesValue = formData.contact.opportunities.join("\n");
-  const terminalLinesValue = formData.hero.terminalLines.join("\n");
+  const opportunitiesValue = toLocalizedListDraft(formData.contact.opportunities);
+  const terminalLinesValue = toLocalizedListDraft(formData.hero.terminalLines);
 
   return (
     <div className="max-w-5xl space-y-8">
@@ -295,70 +302,52 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
           <h3 className="text-xl font-bold text-foreground">Brand & Footer</h3>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Brand Name
-              </label>
-              <input
-                type="text"
-                value={formData.site.brandName}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    site: {
-                      ...formData.site,
-                      brandName: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
+            <LocalizedFieldGroup
+              label="Brand Name"
+              value={toLocalizedDraft(formData.site.brandName)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  site: {
+                    ...formData.site,
+                    brandName: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Footer Prefix
-              </label>
-              <input
-                type="text"
-                value={formData.site.footerPrefix}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    site: {
-                      ...formData.site,
-                      footerPrefix: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
+            <LocalizedFieldGroup
+              label="Footer Prefix"
+              value={toLocalizedDraft(formData.site.footerPrefix)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  site: {
+                    ...formData.site,
+                    footerPrefix: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
           </div>
 
           <div className="grid md:grid-cols-[minmax(0,1fr)_240px] gap-6 items-end">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Footer Highlight
-              </label>
-              <input
-                type="text"
-                value={formData.site.footerHighlight}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    site: {
-                      ...formData.site,
-                      footerHighlight: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
+            <LocalizedFieldGroup
+              label="Footer Highlight"
+              value={toLocalizedDraft(formData.site.footerHighlight)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  site: {
+                    ...formData.site,
+                    footerHighlight: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
 
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
@@ -567,112 +556,84 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
         <div className="p-8 rounded-2xl bg-card border border-border space-y-6">
           <h3 className="text-xl font-bold text-foreground">Hero Section</h3>
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Eyebrow
-            </label>
-            <input
-              type="text"
-              value={formData.hero.eyebrow}
-              onChange={(event) =>
-                setFormData({
-                  ...formData,
-                  hero: {
-                    ...formData.hero,
-                    eyebrow: event.target.value,
-                  },
-                })
-              }
-              disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-            />
-          </div>
+          <LocalizedFieldGroup
+            label="Eyebrow"
+            value={toLocalizedDraft(formData.hero.eyebrow)}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                hero: {
+                  ...formData.hero,
+                  eyebrow: buildLocalizedTextValue(value),
+                },
+              })
+            }
+            disabled={!canEdit}
+          />
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Title Line One
-              </label>
-              <input
-                type="text"
-                value={formData.hero.titlePrefix}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    hero: {
-                      ...formData.hero,
-                      titlePrefix: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Title Line Two
-              </label>
-              <input
-                type="text"
-                value={formData.hero.titleAccent}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    hero: {
-                      ...formData.hero,
-                      titleAccent: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Role Line
-            </label>
-            <input
-              type="text"
-              value={formData.hero.role}
-              onChange={(event) =>
+            <LocalizedFieldGroup
+              label="Title Line One"
+              value={toLocalizedDraft(formData.hero.titlePrefix)}
+              onChange={(value) =>
                 setFormData({
                   ...formData,
                   hero: {
                     ...formData.hero,
-                    role: event.target.value,
+                    titlePrefix: buildLocalizedTextValue(value),
                   },
                 })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
             />
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Description
-            </label>
-            <textarea
-              value={formData.hero.description}
-              onChange={(event) =>
+            <LocalizedFieldGroup
+              label="Title Line Two"
+              value={toLocalizedDraft(formData.hero.titleAccent)}
+              onChange={(value) =>
                 setFormData({
                   ...formData,
                   hero: {
                     ...formData.hero,
-                    description: event.target.value,
+                    titleAccent: buildLocalizedTextValue(value),
                   },
                 })
               }
-              rows={4}
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
             />
           </div>
+
+          <LocalizedFieldGroup
+            label="Role Line"
+            value={toLocalizedDraft(formData.hero.role)}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                hero: {
+                  ...formData.hero,
+                  role: buildLocalizedTextValue(value),
+                },
+              })
+            }
+            disabled={!canEdit}
+          />
+
+          <LocalizedFieldGroup
+            label="Description"
+            value={toLocalizedDraft(formData.hero.description)}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                hero: {
+                  ...formData.hero,
+                  description: buildLocalizedTextValue(value),
+                },
+              })
+            }
+            multiline
+            rows={4}
+            disabled={!canEdit}
+          />
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -709,21 +670,23 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
             <label className="block text-sm font-medium text-foreground mb-2">
               Terminal Script
             </label>
-            <textarea
+            <LocalizedFieldGroup
+              label="Terminal Script"
               value={terminalLinesValue}
-              onChange={(event) =>
+              onChange={(value) =>
                 setFormData({
                   ...formData,
                   hero: {
                     ...formData.hero,
-                    terminalLines: parseLineList(event.target.value),
+                    terminalLines: buildLocalizedListValue(value),
                   },
                 })
               }
+              multiline
               rows={6}
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-              placeholder="$ whoami&#10;Cybersecurity engineer and founder&#10;$ focus --today&#10;Building safer digital products for Africa"
+              englishPlaceholder={"$ whoami\nCybersecurity engineer and founder\n$ focus --today\nBuilding safer digital products for Africa"}
+              frenchPlaceholder={"$ whoami\nIngenieure cybersécurité et fondatrice\n$ focus --today\nConstruire des produits numeriques plus surs pour l'Afrique"}
             />
             <p className="mt-2 text-xs text-muted-foreground">
               Put one terminal line per row. Lines starting with `$` are shown as
@@ -751,47 +714,35 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
           </label>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Primary Button Label
-              </label>
-              <input
-                type="text"
-                value={formData.hero.primaryCtaLabel}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    hero: {
-                      ...formData.hero,
-                      primaryCtaLabel: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
+            <LocalizedFieldGroup
+              label="Primary Button Label"
+              value={toLocalizedDraft(formData.hero.primaryCtaLabel)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  hero: {
+                    ...formData.hero,
+                    primaryCtaLabel: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Secondary Button Label
-              </label>
-              <input
-                type="text"
-                value={formData.hero.secondaryCtaLabel}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    hero: {
-                      ...formData.hero,
-                      secondaryCtaLabel: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
+            <LocalizedFieldGroup
+              label="Secondary Button Label"
+              value={toLocalizedDraft(formData.hero.secondaryCtaLabel)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  hero: {
+                    ...formData.hero,
+                    secondaryCtaLabel: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -819,26 +770,20 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Portrait Alt Text
-              </label>
-              <input
-                type="text"
-                value={formData.hero.portraitAlt}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    hero: {
-                      ...formData.hero,
-                      portraitAlt: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
+            <LocalizedFieldGroup
+              label="Portrait Alt Text"
+              value={toLocalizedDraft(formData.hero.portraitAlt)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  hero: {
+                    ...formData.hero,
+                    portraitAlt: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
           </div>
 
           <div>
@@ -870,69 +815,53 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
           <h3 className="text-xl font-bold text-foreground">Contact Section</h3>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Section Heading
-              </label>
-              <input
-                type="text"
-                value={formData.contact.heading}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    contact: {
-                      ...formData.contact,
-                      heading: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Submit Button Label
-              </label>
-              <input
-                type="text"
-                value={formData.contact.submitLabel}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    contact: {
-                      ...formData.contact,
-                      submitLabel: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Intro Text
-            </label>
-            <textarea
-              value={formData.contact.intro}
-              onChange={(event) =>
+            <LocalizedFieldGroup
+              label="Section Heading"
+              value={toLocalizedDraft(formData.contact.heading)}
+              onChange={(value) =>
                 setFormData({
                   ...formData,
                   contact: {
                     ...formData.contact,
-                    intro: event.target.value,
+                    heading: buildLocalizedTextValue(value),
                   },
                 })
               }
-              rows={3}
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
+            />
+
+            <LocalizedFieldGroup
+              label="Submit Button Label"
+              value={toLocalizedDraft(formData.contact.submitLabel)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  contact: {
+                    ...formData.contact,
+                    submitLabel: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
             />
           </div>
+
+          <LocalizedFieldGroup
+            label="Intro Text"
+            value={toLocalizedDraft(formData.contact.intro)}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                contact: {
+                  ...formData.contact,
+                  intro: buildLocalizedTextValue(value),
+                },
+              })
+            }
+            multiline
+            rows={3}
+            disabled={!canEdit}
+          />
 
           <div className="grid md:grid-cols-[minmax(0,1fr)_180px] gap-6 items-end">
             <div>
@@ -990,181 +919,147 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Name Label
-              </label>
-              <input
-                type="text"
-                value={formData.contact.nameLabel}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    contact: {
-                      ...formData.contact,
-                      nameLabel: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Name Placeholder
-              </label>
-              <input
-                type="text"
-                value={formData.contact.namePlaceholder}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    contact: {
-                      ...formData.contact,
-                      namePlaceholder: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Email Label
-              </label>
-              <input
-                type="text"
-                value={formData.contact.emailLabel}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    contact: {
-                      ...formData.contact,
-                      emailLabel: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Email Placeholder
-              </label>
-              <input
-                type="text"
-                value={formData.contact.emailPlaceholder}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    contact: {
-                      ...formData.contact,
-                      emailPlaceholder: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Message Label
-              </label>
-              <input
-                type="text"
-                value={formData.contact.messageLabel}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    contact: {
-                      ...formData.contact,
-                      messageLabel: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Message Placeholder
-              </label>
-              <input
-                type="text"
-                value={formData.contact.messagePlaceholder}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    contact: {
-                      ...formData.contact,
-                      messagePlaceholder: event.target.value,
-                    },
-                  })
-                }
-                disabled={!canEdit}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Opportunity Box Title
-            </label>
-            <input
-              type="text"
-              value={formData.contact.ctaTitle}
-              onChange={(event) =>
+            <LocalizedFieldGroup
+              label="Name Label"
+              value={toLocalizedDraft(formData.contact.nameLabel)}
+              onChange={(value) =>
                 setFormData({
                   ...formData,
                   contact: {
                     ...formData.contact,
-                    ctaTitle: event.target.value,
+                    nameLabel: buildLocalizedTextValue(value),
                   },
                 })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
             />
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Opportunities
-            </label>
-            <textarea
-              value={opportunitiesValue}
-              onChange={(event) =>
+            <LocalizedFieldGroup
+              label="Name Placeholder"
+              value={toLocalizedDraft(formData.contact.namePlaceholder)}
+              onChange={(value) =>
                 setFormData({
                   ...formData,
                   contact: {
                     ...formData.contact,
-                    opportunities: event.target.value
-                      .split("\n")
-                      .map((item) => item.trim())
-                      .filter(Boolean),
+                    namePlaceholder: buildLocalizedTextValue(value),
                   },
                 })
               }
-              rows={5}
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
             />
           </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <LocalizedFieldGroup
+              label="Email Label"
+              value={toLocalizedDraft(formData.contact.emailLabel)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  contact: {
+                    ...formData.contact,
+                    emailLabel: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
+
+            <LocalizedFieldGroup
+              label="Email Placeholder"
+              value={toLocalizedDraft(formData.contact.emailPlaceholder)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  contact: {
+                    ...formData.contact,
+                    emailPlaceholder: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <LocalizedFieldGroup
+              label="Message Label"
+              value={toLocalizedDraft(formData.contact.messageLabel)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  contact: {
+                    ...formData.contact,
+                    messageLabel: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
+
+            <LocalizedFieldGroup
+              label="Message Placeholder"
+              value={toLocalizedDraft(formData.contact.messagePlaceholder)}
+              onChange={(value) =>
+                setFormData({
+                  ...formData,
+                  contact: {
+                    ...formData.contact,
+                    messagePlaceholder: buildLocalizedTextValue(value),
+                  },
+                })
+              }
+              disabled={!canEdit}
+            />
+          </div>
+
+          <LocalizedFieldGroup
+            label="Opportunity Box Title"
+            value={toLocalizedDraft(formData.contact.ctaTitle)}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                contact: {
+                  ...formData.contact,
+                  ctaTitle: buildLocalizedTextValue(value),
+                },
+              })
+            }
+            disabled={!canEdit}
+          />
+
+          <LocalizedFieldGroup
+            label="Opportunities"
+            value={opportunitiesValue}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                contact: {
+                  ...formData.contact,
+                  opportunities: buildLocalizedListValue(value),
+                },
+              })
+            }
+            multiline
+            rows={5}
+            disabled={!canEdit}
+          />
+
+          <LocalizedFieldGroup
+            label="Social links heading"
+            value={toLocalizedDraft(formData.contact.socialHeading)}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                contact: {
+                  ...formData.contact,
+                  socialHeading: buildLocalizedTextValue(value),
+                },
+              })
+            }
+            disabled={!canEdit}
+          />
 
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -1243,20 +1138,13 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Label
-                    </label>
-                    <input
-                      type="text"
-                      value={socialForm.label}
-                      onChange={(event) =>
-                        setSocialForm({ ...socialForm, label: event.target.value })
-                      }
-                      className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-                      required
-                    />
-                  </div>
+                  <LocalizedFieldGroup
+                    label="Label"
+                    value={socialForm.label}
+                    onChange={(value) =>
+                      setSocialForm({ ...socialForm, label: value })
+                    }
+                  />
 
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
@@ -1309,7 +1197,9 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
                 className="p-5 rounded-xl bg-background border border-border flex items-start justify-between gap-4"
               >
                 <div>
-                  <p className="font-semibold text-foreground">{item.label}</p>
+                  <p className="font-semibold text-foreground">
+                    {getLocalizedText(item.label, "en")}
+                  </p>
                   <p className="text-sm text-muted-foreground">{item.icon}</p>
                   <p className="text-sm text-muted-foreground break-all">
                     {item.href}
@@ -1323,7 +1213,7 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
                       setEditingSocial(item);
                       setSocialForm({
                         icon: item.icon as typeof socialForm.icon,
-                        label: item.label,
+                        label: toLocalizedDraft(item.label),
                         href: item.href,
                         color: item.color,
                       });

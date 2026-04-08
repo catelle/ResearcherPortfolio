@@ -21,10 +21,13 @@ export const visionIconOptions = ["Target", "Zap", "Users", "Globe2"] as const;
 
 export const socialIconOptions = ["Linkedin", "Twitter", "Github", "Mail"] as const;
 
+export const supportedLocales = ["en", "fr"] as const;
+
 export type ProjectIconName = (typeof projectIconOptions)[number];
 export type RoleIconName = (typeof roleIconOptions)[number];
 export type VisionIconName = (typeof visionIconOptions)[number];
 export type SocialIconName = (typeof socialIconOptions)[number];
+export type Locale = (typeof supportedLocales)[number];
 export type HeroDescriptionDisplayMode = "text" | "terminal";
 export type SiteCursorStyle = "default" | "accent-dot" | "ring" | "heart" | "emoji";
 export type SectionBackgroundStyle =
@@ -33,6 +36,13 @@ export type SectionBackgroundStyle =
   | "particles"
   | "dotted-map";
 export type FormCardEffectStyle = "none" | "border-beam" | "shine-border";
+
+export interface LocalizedText {
+  en: string;
+  fr: string;
+}
+
+export type LocalizedTextValue = string | LocalizedText;
 
 export interface SectionOrbitingBackgrounds {
   hero: boolean;
@@ -65,9 +75,9 @@ export interface FormCardEffect {
 }
 
 export interface SiteContent {
-  brandName: string;
-  footerPrefix: string;
-  footerHighlight: string;
+  brandName: LocalizedTextValue;
+  footerPrefix: LocalizedTextValue;
+  footerHighlight: LocalizedTextValue;
   themeAccentColor: string;
   cursorStyle: SiteCursorStyle;
   orbitingBackgrounds: SectionOrbitingBackgrounds;
@@ -75,72 +85,72 @@ export interface SiteContent {
 }
 
 export interface HeroContent {
-  eyebrow: string;
-  titlePrefix: string;
-  titleAccent: string;
-  role: string;
-  description: string;
+  eyebrow: LocalizedTextValue;
+  titlePrefix: LocalizedTextValue;
+  titleAccent: LocalizedTextValue;
+  role: LocalizedTextValue;
+  description: LocalizedTextValue;
   descriptionDisplayMode: HeroDescriptionDisplayMode;
-  terminalLines: string[];
+  terminalLines: LocalizedTextValue[];
   showSocialDock: boolean;
-  primaryCtaLabel: string;
-  secondaryCtaLabel: string;
+  primaryCtaLabel: LocalizedTextValue;
+  secondaryCtaLabel: LocalizedTextValue;
   portraitUrl: string;
-  portraitAlt: string;
+  portraitAlt: LocalizedTextValue;
 }
 
 export interface HighlightCard {
   id: string;
   icon: string;
-  title: string;
-  description: string;
+  title: LocalizedTextValue;
+  description: LocalizedTextValue;
 }
 
 export interface Project {
   id: string;
   icon: string;
-  title: string;
-  category: string;
-  summary: string;
-  problem: string;
-  solution: string;
+  title: LocalizedTextValue;
+  category: LocalizedTextValue;
+  summary: LocalizedTextValue;
+  problem: LocalizedTextValue;
+  solution: LocalizedTextValue;
   techStack: string[];
-  impact: string;
+  impact: LocalizedTextValue;
   color: string;
   image: string;
-  imageAlt: string;
+  imageAlt: LocalizedTextValue;
   year: string;
-  client: string;
-  role: string;
-  duration: string;
+  client: LocalizedTextValue;
+  role: LocalizedTextValue;
+  duration: LocalizedTextValue;
   featured: boolean;
-  details: string;
-  outcomes: string[];
+  details: LocalizedTextValue;
+  outcomes: LocalizedTextValue[];
   demoUrl: string;
   repositoryUrl: string;
 }
 
 export interface SkillCategory {
   id: string;
-  title: string;
-  skills: string[];
+  title: LocalizedTextValue;
+  skills: LocalizedTextValue[];
   color: string;
 }
 
 export interface BlogPost {
   id: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  date: string;
-  readTime: string;
+  title: LocalizedTextValue;
+  excerpt: LocalizedTextValue;
+  category: LocalizedTextValue;
+  date: LocalizedTextValue;
+  readTime: LocalizedTextValue;
   image: string;
-  imageAlt: string;
-  author: string;
+  imageAlt: LocalizedTextValue;
+  author: LocalizedTextValue;
   featured: boolean;
-  tags: string[];
-  body: string;
-  keyTakeaways: string[];
+  tags: LocalizedTextValue[];
+  body: LocalizedTextValue;
+  keyTakeaways: LocalizedTextValue[];
   externalUrl: string;
 }
 
@@ -162,79 +172,85 @@ export type RecommendationDisplayMode = "cards" | "marquee";
 export interface SocialLink {
   id: string;
   icon: string;
-  label: string;
+  label: LocalizedTextValue;
   href: string;
   color: string;
 }
 
 export interface AboutContent {
-  heading: string;
-  introduction: string;
-  description: string;
+  heading: LocalizedTextValue;
+  introduction: LocalizedTextValue;
+  description: LocalizedTextValue;
   roles: HighlightCard[];
 }
 
 export interface ProjectsContent {
-  heading: string;
-  intro: string;
+  heading: LocalizedTextValue;
+  intro: LocalizedTextValue;
   previewCount: number;
-  viewAllLabel: string;
+  viewAllLabel: LocalizedTextValue;
   items: Project[];
 }
 
 export interface SkillsContent {
-  heading: string;
-  intro: string;
+  heading: LocalizedTextValue;
+  intro: LocalizedTextValue;
   showSkillCloud: boolean;
   previewCategoryCount: number;
   previewSkillsPerCategory: number;
-  viewAllLabel: string;
+  viewAllLabel: LocalizedTextValue;
   categories: SkillCategory[];
 }
 
 export interface BlogContent {
-  heading: string;
-  intro: string;
+  heading: LocalizedTextValue;
+  intro: LocalizedTextValue;
   previewCount: number;
-  viewAllLabel: string;
+  viewAllLabel: LocalizedTextValue;
   posts: BlogPost[];
 }
 
 export interface RecommendationsContent {
-  heading: string;
-  intro: string;
+  heading: LocalizedTextValue;
+  intro: LocalizedTextValue;
   displayMode: RecommendationDisplayMode;
   previewCount: number;
-  viewAllLabel: string;
-  formHeading: string;
-  formIntro: string;
-  submitLabel: string;
-  photoHint: string;
-  successMessage: string;
+  viewAllLabel: LocalizedTextValue;
+  formHeading: LocalizedTextValue;
+  formIntro: LocalizedTextValue;
+  submitLabel: LocalizedTextValue;
+  photoHint: LocalizedTextValue;
+  successMessage: LocalizedTextValue;
+  namePlaceholder: LocalizedTextValue;
+  rolePlaceholder: LocalizedTextValue;
+  companyPlaceholder: LocalizedTextValue;
+  textPlaceholder: LocalizedTextValue;
+  photoLabel: LocalizedTextValue;
+  submittingLabel: LocalizedTextValue;
   formCardEffect: FormCardEffect;
   items: Recommendation[];
 }
 
 export interface VisionContent {
-  heading: string;
-  mainStatement: string;
-  subStatement: string;
+  heading: LocalizedTextValue;
+  mainStatement: LocalizedTextValue;
+  subStatement: LocalizedTextValue;
   pillars: HighlightCard[];
 }
 
 export interface ContactContent {
-  heading: string;
-  intro: string;
-  nameLabel: string;
-  namePlaceholder: string;
-  emailLabel: string;
-  emailPlaceholder: string;
-  messageLabel: string;
-  messagePlaceholder: string;
-  submitLabel: string;
-  ctaTitle: string;
-  opportunities: string[];
-  socialHeading: string;
+  heading: LocalizedTextValue;
+  intro: LocalizedTextValue;
+  nameLabel: LocalizedTextValue;
+  namePlaceholder: LocalizedTextValue;
+  emailLabel: LocalizedTextValue;
+  emailPlaceholder: LocalizedTextValue;
+  messageLabel: LocalizedTextValue;
+  messagePlaceholder: LocalizedTextValue;
+  submitLabel: LocalizedTextValue;
+  ctaTitle: LocalizedTextValue;
+  opportunities: LocalizedTextValue[];
+  socialHeading: LocalizedTextValue;
   socialLinks: SocialLink[];
   formCardEffect: FormCardEffect;
 }
@@ -293,6 +309,105 @@ export function getDefaultPortfolioContent(): PortfolioContent {
   return structuredClone(defaultContent) as PortfolioContent;
 }
 
+function isLocalizedText(value: unknown): value is LocalizedText {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "en" in value &&
+      "fr" in value &&
+      typeof value.en === "string" &&
+      typeof value.fr === "string",
+  );
+}
+
+export function getLocalizedText(
+  value: LocalizedTextValue | undefined | null,
+  locale: Locale,
+): string {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (!isLocalizedText(value)) {
+    return "";
+  }
+
+  const primary = value[locale]?.trim();
+  const fallback = value.en?.trim() || value.fr?.trim();
+
+  return primary || fallback || "";
+}
+
+export function getLocalizedTextList(
+  values: LocalizedTextValue[] | undefined | null,
+  locale: Locale,
+): string[] {
+  return (values ?? [])
+    .map((value) => getLocalizedText(value, locale))
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+export function toLocalizedDraft(
+  value: LocalizedTextValue | undefined | null,
+): LocalizedText {
+  if (typeof value === "string") {
+    return { en: value, fr: value };
+  }
+
+  if (isLocalizedText(value)) {
+    return {
+      en: value.en,
+      fr: value.fr || value.en,
+    };
+  }
+
+  return { en: "", fr: "" };
+}
+
+export function toLocalizedListDraft(
+  values: LocalizedTextValue[] | undefined | null,
+): LocalizedText {
+  return {
+    en: getLocalizedTextList(values, "en").join("\n"),
+    fr: getLocalizedTextList(values, "fr").join("\n"),
+  };
+}
+
+export function buildLocalizedTextValue(value: LocalizedText): LocalizedTextValue {
+  const en = value.en.trim();
+  const fr = value.fr.trim() || en;
+
+  if (!en && !fr) {
+    return "";
+  }
+
+  return {
+    en: en || fr,
+    fr: fr || en,
+  };
+}
+
+function splitLocalizedListInput(value: string) {
+  return value
+    .split(/\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+export function buildLocalizedListValue(value: LocalizedText): LocalizedTextValue[] {
+  const enItems = splitLocalizedListInput(value.en);
+  const frItems = splitLocalizedListInput(value.fr);
+  const length = Math.max(enItems.length, frItems.length);
+
+  return Array.from({ length }, (_, index) =>
+    buildLocalizedTextValue({
+      en: enItems[index] ?? frItems[index] ?? "",
+      fr: frItems[index] ?? enItems[index] ?? "",
+    }),
+  ).filter((item) => getLocalizedText(item, "en") || getLocalizedText(item, "fr"));
+}
+
 export function createContentItemId(prefix: string) {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return `${prefix}-${crypto.randomUUID()}`;
@@ -310,7 +425,7 @@ export function slugifyContentSegment(value: string) {
 }
 
 export function getProjectSlug(project: Project) {
-  const titleSegment = slugifyContentSegment(project.title);
+  const titleSegment = slugifyContentSegment(getLocalizedText(project.title, "en"));
   return titleSegment ? `${titleSegment}-${project.id}` : project.id;
 }
 
@@ -319,7 +434,7 @@ export function getProjectHref(project: Project) {
 }
 
 export function getBlogPostSlug(post: BlogPost) {
-  const titleSegment = slugifyContentSegment(post.title);
+  const titleSegment = slugifyContentSegment(getLocalizedText(post.title, "en"));
   return titleSegment ? `${titleSegment}-${post.id}` : post.id;
 }
 

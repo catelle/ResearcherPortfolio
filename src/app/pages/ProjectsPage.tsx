@@ -6,36 +6,51 @@ import { SiteLayout } from "../components/SiteLayout";
 import { PageHero } from "../components/PageHero";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { useData } from "../context/DataContext";
-import { getProjectHref } from "../lib/portfolio-content";
+import { useLocale } from "../context/LocaleContext";
+import {
+  getLocalizedText,
+  getProjectHref,
+} from "../lib/portfolio-content";
 
 const PAGE_SIZE = 6;
 
 export function ProjectsPage() {
   const { content } = useData();
+  const { locale, copy } = useLocale();
   const orderedItems = content.projects.items;
   const categories = Array.from(
-    new Set(orderedItems.map((item) => item.category).filter(Boolean)),
+    new Set(
+      orderedItems
+        .map((item) => getLocalizedText(item.category, locale))
+        .filter(Boolean),
+    ),
   );
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState(copy.common.all);
   const filteredItems =
-    activeCategory === "All"
+    activeCategory === copy.common.all
       ? orderedItems
-      : orderedItems.filter((item) => item.category === activeCategory);
+      : orderedItems.filter(
+          (item) => getLocalizedText(item.category, locale) === activeCategory,
+        );
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / PAGE_SIZE));
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     setPage(1);
-  }, [activeCategory, content.projects.items.length]);
+  }, [activeCategory, content.projects.items.length, locale]);
+
+  useEffect(() => {
+    setActiveCategory(copy.common.all);
+  }, [copy.common.all]);
 
   const pageItems = filteredItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Case Studies"
-        title={content.projects.heading}
-        description={content.projects.intro}
+        eyebrow={copy.pages.projectsEyebrow}
+        title={getLocalizedText(content.projects.heading, locale)}
+        description={getLocalizedText(content.projects.intro, locale)}
       />
 
       <section className="pb-24">
@@ -46,19 +61,19 @@ export function ProjectsPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              Home
+              {copy.common.home}
             </Link>
 
             <button
               type="button"
-              onClick={() => setActiveCategory("All")}
+              onClick={() => setActiveCategory(copy.common.all)}
               className={`px-4 py-2 rounded-full text-sm border transition-colors ${
-                activeCategory === "All"
+                activeCategory === copy.common.all
                   ? "theme-accent-badge border-transparent"
                   : "bg-card border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              All
+              {copy.common.all}
             </button>
 
             {categories.map((category) => (
@@ -90,16 +105,19 @@ export function ProjectsPage() {
                   <div className="relative aspect-[16/10] bg-muted">
                     <ImageWithFallback
                       src={project.image}
-                      alt={project.imageAlt || project.title}
+                      alt={
+                        getLocalizedText(project.imageAlt, locale) ||
+                        getLocalizedText(project.title, locale)
+                      }
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-x-0 top-0 flex items-center justify-between p-5">
                       <span className="px-3 py-1 rounded-full text-xs font-medium theme-accent-badge">
-                        {project.category}
+                        {getLocalizedText(project.category, locale)}
                       </span>
                       {project.featured ? (
                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-background/90 text-foreground border border-border">
-                          Featured
+                          {copy.common.featured}
                         </span>
                       ) : null}
                     </div>
@@ -108,15 +126,20 @@ export function ProjectsPage() {
                   <div className="p-7">
                     <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">
                       {project.year ? <span>{project.year}</span> : null}
-                      {project.client ? <span>{project.client}</span> : null}
-                      {project.duration ? <span>{project.duration}</span> : null}
+                      {getLocalizedText(project.client, locale) ? (
+                        <span>{getLocalizedText(project.client, locale)}</span>
+                      ) : null}
+                      {getLocalizedText(project.duration, locale) ? (
+                        <span>{getLocalizedText(project.duration, locale)}</span>
+                      ) : null}
                     </div>
 
                     <h2 className="mt-4 text-2xl font-bold text-foreground">
-                      {project.title}
+                      {getLocalizedText(project.title, locale)}
                     </h2>
                     <p className="mt-3 text-muted-foreground leading-relaxed">
-                      {project.summary || project.problem}
+                      {getLocalizedText(project.summary, locale) ||
+                        getLocalizedText(project.problem, locale)}
                     </p>
 
                     {project.techStack.length > 0 ? (
@@ -137,7 +160,7 @@ export function ProjectsPage() {
                         to={getProjectHref(project)}
                         className="inline-flex items-center gap-2 theme-accent-text font-medium"
                       >
-                        View full details
+                        {copy.projects.viewFullDetails}
                         <ArrowRight className="w-4 h-4" />
                       </Link>
 
@@ -149,7 +172,7 @@ export function ProjectsPage() {
                             rel="noreferrer"
                             className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
                           >
-                            Demo
+                            {copy.common.demo}
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         ) : null}
@@ -160,7 +183,7 @@ export function ProjectsPage() {
                             rel="noreferrer"
                             className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
                           >
-                            Repo
+                            {copy.common.repo}
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         ) : null}
@@ -174,7 +197,7 @@ export function ProjectsPage() {
 
           {filteredItems.length === 0 ? (
             <div className="mt-12 rounded-3xl bg-card border border-border p-10 text-center text-muted-foreground">
-              No projects match this filter yet.
+              {copy.projects.noMatch}
             </div>
           ) : null}
 
@@ -186,10 +209,10 @@ export function ProjectsPage() {
                 disabled={page === 1}
                 className="px-5 py-3 rounded-xl bg-card border border-border text-foreground disabled:opacity-50 transition-colors"
               >
-                Previous
+                {copy.common.previous}
               </button>
               <span className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
+                {copy.common.page} {page} {copy.common.of} {totalPages}
               </span>
               <button
                 type="button"
@@ -199,7 +222,7 @@ export function ProjectsPage() {
                 disabled={page === totalPages}
                 className="px-5 py-3 rounded-xl bg-card border border-border text-foreground disabled:opacity-50 transition-colors"
               >
-                Next
+                {copy.common.next}
               </button>
             </div>
           ) : null}

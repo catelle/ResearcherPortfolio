@@ -6,36 +6,52 @@ import { SiteLayout } from "../components/SiteLayout";
 import { PageHero } from "../components/PageHero";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { useData } from "../context/DataContext";
-import { getBlogPostHref } from "../lib/portfolio-content";
+import { useLocale } from "../context/LocaleContext";
+import {
+  getBlogPostHref,
+  getLocalizedText,
+  getLocalizedTextList,
+} from "../lib/portfolio-content";
 
 const PAGE_SIZE = 6;
 
 export function BlogPage() {
   const { content } = useData();
+  const { locale, copy } = useLocale();
   const orderedPosts = content.blog.posts;
   const categories = Array.from(
-    new Set(orderedPosts.map((post) => post.category).filter(Boolean)),
+    new Set(
+      orderedPosts
+        .map((post) => getLocalizedText(post.category, locale))
+        .filter(Boolean),
+    ),
   );
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState(copy.common.all);
   const filteredPosts =
-    activeCategory === "All"
+    activeCategory === copy.common.all
       ? orderedPosts
-      : orderedPosts.filter((post) => post.category === activeCategory);
+      : orderedPosts.filter(
+          (post) => getLocalizedText(post.category, locale) === activeCategory,
+        );
   const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     setPage(1);
-  }, [activeCategory, content.blog.posts.length]);
+  }, [activeCategory, content.blog.posts.length, locale]);
+
+  useEffect(() => {
+    setActiveCategory(copy.common.all);
+  }, [copy.common.all]);
 
   const pageItems = filteredPosts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Writing"
-        title={content.blog.heading}
-        description={content.blog.intro}
+        eyebrow={copy.pages.blogEyebrow}
+        title={getLocalizedText(content.blog.heading, locale)}
+        description={getLocalizedText(content.blog.intro, locale)}
       />
 
       <section className="pb-24">
@@ -46,19 +62,19 @@ export function BlogPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              Home
+              {copy.common.home}
             </Link>
 
             <button
               type="button"
-              onClick={() => setActiveCategory("All")}
+              onClick={() => setActiveCategory(copy.common.all)}
               className={`px-4 py-2 rounded-full text-sm border transition-colors ${
-                activeCategory === "All"
+                activeCategory === copy.common.all
                   ? "theme-accent-badge border-transparent"
                   : "bg-card border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              All
+              {copy.common.all}
             </button>
 
             {categories.map((category) => (
@@ -93,16 +109,19 @@ export function BlogPage() {
                   <div className="relative h-56 bg-muted">
                     <ImageWithFallback
                       src={post.image}
-                      alt={post.imageAlt || post.title}
+                      alt={
+                        getLocalizedText(post.imageAlt, locale) ||
+                        getLocalizedText(post.title, locale)
+                      }
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-4 left-4 flex items-center gap-2">
                       <span className="px-3 py-1 rounded-full text-xs font-medium theme-accent-badge">
-                        {post.category}
+                        {getLocalizedText(post.category, locale)}
                       </span>
                       {post.featured ? (
                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-background/90 text-foreground border border-border">
-                          Featured
+                          {copy.common.featured}
                         </span>
                       ) : null}
                     </div>
@@ -112,24 +131,26 @@ export function BlogPage() {
                     <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
                       <span className="inline-flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        {post.date}
+                        {getLocalizedText(post.date, locale)}
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <Clock className="w-4 h-4" />
-                        {post.readTime}
+                        {getLocalizedText(post.readTime, locale)}
                       </span>
                     </div>
 
                     <h2 className="text-2xl font-bold text-foreground line-clamp-2">
-                      {post.title}
+                      {getLocalizedText(post.title, locale)}
                     </h2>
                     <p className="mt-3 text-muted-foreground line-clamp-4 leading-relaxed">
-                      {post.excerpt}
+                      {getLocalizedText(post.excerpt, locale)}
                     </p>
 
                     {post.tags.length > 0 ? (
                       <div className="mt-5 flex flex-wrap gap-2">
-                        {post.tags.slice(0, 4).map((tag) => (
+                        {getLocalizedTextList(post.tags, locale)
+                          .slice(0, 4)
+                          .map((tag) => (
                           <span
                             key={tag}
                             className="px-3 py-1 text-xs rounded-full bg-muted text-foreground border border-border"
@@ -141,7 +162,7 @@ export function BlogPage() {
                     ) : null}
 
                     <div className="mt-6 inline-flex items-center gap-2 theme-accent-text font-medium">
-                      Read full article
+                      {copy.blog.readFullArticle}
                       <ArrowRight className="w-4 h-4" />
                     </div>
                   </div>
@@ -152,7 +173,7 @@ export function BlogPage() {
 
           {filteredPosts.length === 0 ? (
             <div className="mt-12 rounded-3xl bg-card border border-border p-10 text-center text-muted-foreground">
-              No articles match this filter yet.
+              {copy.blog.noMatch}
             </div>
           ) : null}
 
@@ -164,10 +185,10 @@ export function BlogPage() {
                 disabled={page === 1}
                 className="px-5 py-3 rounded-xl bg-card border border-border text-foreground disabled:opacity-50 transition-colors"
               >
-                Previous
+                {copy.common.previous}
               </button>
               <span className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
+                {copy.common.page} {page} {copy.common.of} {totalPages}
               </span>
               <button
                 type="button"
@@ -177,7 +198,7 @@ export function BlogPage() {
                 disabled={page === totalPages}
                 className="px-5 py-3 rounded-xl bg-card border border-border text-foreground disabled:opacity-50 transition-colors"
               >
-                Next
+                {copy.common.next}
               </button>
             </div>
           ) : null}

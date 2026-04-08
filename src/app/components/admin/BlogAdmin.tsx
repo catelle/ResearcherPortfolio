@@ -3,10 +3,17 @@ import { motion } from "motion/react";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
 import { useData } from "../../context/DataContext";
 import {
+  buildLocalizedListValue,
+  buildLocalizedTextValue,
   createContentItemId,
+  getLocalizedText,
+  toLocalizedDraft,
+  toLocalizedListDraft,
+  type LocalizedText,
   type BlogPost,
 } from "../../lib/portfolio-content";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
+import { LocalizedFieldGroup } from "./LocalizedFields";
 
 function parseListInput(value: string) {
   return value
@@ -23,18 +30,18 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
-    title: "",
-    excerpt: "",
-    category: "",
-    date: "",
-    readTime: "",
+    title: { en: "", fr: "" } as LocalizedText,
+    excerpt: { en: "", fr: "" } as LocalizedText,
+    category: { en: "", fr: "" } as LocalizedText,
+    date: { en: "", fr: "" } as LocalizedText,
+    readTime: { en: "", fr: "" } as LocalizedText,
     image: "",
-    imageAlt: "",
-    author: "",
+    imageAlt: { en: "", fr: "" } as LocalizedText,
+    author: { en: "", fr: "" } as LocalizedText,
     featured: false,
-    tags: "",
-    body: "",
-    keyTakeaways: "",
+    tags: { en: "", fr: "" } as LocalizedText,
+    body: { en: "", fr: "" } as LocalizedText,
+    keyTakeaways: { en: "", fr: "" } as LocalizedText,
     externalUrl: "",
   });
 
@@ -44,18 +51,18 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
 
   const resetForm = () => {
     setFormData({
-      title: "",
-      excerpt: "",
-      category: "",
-      date: "",
-      readTime: "",
+      title: { en: "", fr: "" },
+      excerpt: { en: "", fr: "" },
+      category: { en: "", fr: "" },
+      date: { en: "", fr: "" },
+      readTime: { en: "", fr: "" },
       image: "",
-      imageAlt: "",
-      author: "",
+      imageAlt: { en: "", fr: "" },
+      author: { en: "", fr: "" },
       featured: false,
-      tags: "",
-      body: "",
-      keyTakeaways: "",
+      tags: { en: "", fr: "" },
+      body: { en: "", fr: "" },
+      keyTakeaways: { en: "", fr: "" },
       externalUrl: "",
     });
     setEditingPost(null);
@@ -106,18 +113,18 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
 
     const nextPost: BlogPost = {
       id: editingPost?.id ?? createContentItemId("blog"),
-      title: formData.title.trim(),
-      excerpt: formData.excerpt.trim(),
-      category: formData.category.trim(),
-      date: formData.date.trim(),
-      readTime: formData.readTime.trim(),
+      title: buildLocalizedTextValue(formData.title),
+      excerpt: buildLocalizedTextValue(formData.excerpt),
+      category: buildLocalizedTextValue(formData.category),
+      date: buildLocalizedTextValue(formData.date),
+      readTime: buildLocalizedTextValue(formData.readTime),
       image: imageUrl,
-      imageAlt: formData.imageAlt.trim(),
-      author: formData.author.trim(),
+      imageAlt: buildLocalizedTextValue(formData.imageAlt),
+      author: buildLocalizedTextValue(formData.author),
       featured: formData.featured,
-      tags: parseListInput(formData.tags),
-      body: formData.body.trim(),
-      keyTakeaways: parseListInput(formData.keyTakeaways),
+      tags: buildLocalizedListValue(formData.tags),
+      body: buildLocalizedTextValue(formData.body),
+      keyTakeaways: buildLocalizedListValue(formData.keyTakeaways),
       externalUrl: formData.externalUrl.trim(),
     };
 
@@ -168,25 +175,21 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              value={section.heading}
-              onChange={(event) =>
-                setSection({ ...section, heading: event.target.value })
+            <LocalizedFieldGroup
+              label="Section heading"
+              value={toLocalizedDraft(section.heading)}
+              onChange={(value) =>
+                setSection({ ...section, heading: buildLocalizedTextValue(value) })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Section heading"
             />
-            <input
-              type="text"
-              value={section.intro}
-              onChange={(event) =>
-                setSection({ ...section, intro: event.target.value })
+            <LocalizedFieldGroup
+              label="Section intro"
+              value={toLocalizedDraft(section.intro)}
+              onChange={(value) =>
+                setSection({ ...section, intro: buildLocalizedTextValue(value) })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Section intro"
             />
             <input
               type="number"
@@ -202,15 +205,16 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
               className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
               placeholder="Homepage preview count"
             />
-            <input
-              type="text"
-              value={section.viewAllLabel}
-              onChange={(event) =>
-                setSection({ ...section, viewAllLabel: event.target.value })
+            <LocalizedFieldGroup
+              label="View all label"
+              value={toLocalizedDraft(section.viewAllLabel)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  viewAllLabel: buildLocalizedTextValue(value),
+                })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="View all label"
             />
           </div>
         </div>
@@ -263,15 +267,10 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
 
             <form onSubmit={handlePostSubmit} className="space-y-5">
               <div className="grid md:grid-cols-2 gap-5">
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Post title"
                   value={formData.title}
-                  onChange={(event) =>
-                    setFormData({ ...formData, title: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Post title"
-                  required
+                  onChange={(value) => setFormData({ ...formData, title: value })}
                 />
 
                 <label className="flex items-center gap-3 rounded-lg bg-background border border-border px-4 py-3 text-sm text-foreground">
@@ -287,89 +286,75 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                 </label>
               </div>
 
-              <textarea
+              <LocalizedFieldGroup
+                label="Short excerpt"
                 value={formData.excerpt}
-                onChange={(event) =>
-                  setFormData({ ...formData, excerpt: event.target.value })
-                }
+                onChange={(value) => setFormData({ ...formData, excerpt: value })}
+                multiline
                 rows={3}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                placeholder="Short excerpt"
-                required
               />
 
               <div className="grid md:grid-cols-3 gap-4">
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Category"
                   value={formData.category}
-                  onChange={(event) =>
-                    setFormData({ ...formData, category: event.target.value })
+                  onChange={(value) =>
+                    setFormData({ ...formData, category: value })
                   }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Category"
-                  required
                 />
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Date"
                   value={formData.date}
-                  onChange={(event) =>
-                    setFormData({ ...formData, date: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="April 8, 2026"
-                  required
+                  onChange={(value) => setFormData({ ...formData, date: value })}
+                  englishPlaceholder="April 8, 2026"
+                  frenchPlaceholder="8 avril 2026"
                 />
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Read time"
                   value={formData.readTime}
-                  onChange={(event) =>
-                    setFormData({ ...formData, readTime: event.target.value })
+                  onChange={(value) =>
+                    setFormData({ ...formData, readTime: value })
                   }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="7 min read"
-                  required
+                  englishPlaceholder="7 min read"
+                  frenchPlaceholder="7 min de lecture"
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Author"
                   value={formData.author}
-                  onChange={(event) =>
-                    setFormData({ ...formData, author: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Author"
+                  onChange={(value) => setFormData({ ...formData, author: value })}
                 />
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Tags"
                   value={formData.tags}
-                  onChange={(event) =>
-                    setFormData({ ...formData, tags: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Tags separated by commas or new lines"
+                  onChange={(value) => setFormData({ ...formData, tags: value })}
+                  multiline
+                  rows={4}
+                  englishPlaceholder={"Security\nProduct\nAfrica"}
+                  frenchPlaceholder={"Securite\nProduit\nAfrique"}
                 />
               </div>
 
-              <textarea
+              <LocalizedFieldGroup
+                label="Full article body for the detail page"
                 value={formData.body}
-                onChange={(event) =>
-                  setFormData({ ...formData, body: event.target.value })
-                }
+                onChange={(value) => setFormData({ ...formData, body: value })}
+                multiline
                 rows={8}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                placeholder="Full article body for the detail page"
               />
 
-              <textarea
+              <LocalizedFieldGroup
+                label="Key takeaways"
                 value={formData.keyTakeaways}
-                onChange={(event) =>
-                  setFormData({ ...formData, keyTakeaways: event.target.value })
+                onChange={(value) =>
+                  setFormData({ ...formData, keyTakeaways: value })
                 }
+                multiline
                 rows={4}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                placeholder="Key takeaways separated by commas or new lines"
+                englishPlaceholder={"Takeaway one\nTakeaway two"}
+                frenchPlaceholder={"Point cle un\nPoint cle deux"}
               />
 
               <div className="grid md:grid-cols-2 gap-4">
@@ -382,14 +367,10 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                   className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
                   placeholder="Image URL"
                 />
-                <input
-                  type="text"
+                <LocalizedFieldGroup
+                  label="Image alt text"
                   value={formData.imageAlt}
-                  onChange={(event) =>
-                    setFormData({ ...formData, imageAlt: event.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                  placeholder="Image alt text"
+                  onChange={(value) => setFormData({ ...formData, imageAlt: value })}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
@@ -465,7 +446,10 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
               {post.image ? (
                 <ImageWithFallback
                   src={post.image}
-                  alt={post.imageAlt || post.title}
+                  alt={
+                    getLocalizedText(post.imageAlt, "en") ||
+                    getLocalizedText(post.title, "en")
+                  }
                   className="w-full h-full object-cover"
                 />
               ) : null}
@@ -478,7 +462,7 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
             <div className="p-5 space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <span className="px-3 py-1 text-xs rounded-full theme-accent-badge font-medium">
-                  {post.category}
+                  {getLocalizedText(post.category, "en")}
                 </span>
 
                 <div className="flex gap-2">
@@ -487,18 +471,18 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                     onClick={() => {
                       setEditingPost(post);
                       setFormData({
-                        title: post.title,
-                        excerpt: post.excerpt,
-                        category: post.category,
-                        date: post.date,
-                        readTime: post.readTime,
+                        title: toLocalizedDraft(post.title),
+                        excerpt: toLocalizedDraft(post.excerpt),
+                        category: toLocalizedDraft(post.category),
+                        date: toLocalizedDraft(post.date),
+                        readTime: toLocalizedDraft(post.readTime),
                         image: post.image,
-                        imageAlt: post.imageAlt,
-                        author: post.author,
+                        imageAlt: toLocalizedDraft(post.imageAlt),
+                        author: toLocalizedDraft(post.author),
                         featured: post.featured,
-                        tags: post.tags.join(", "),
-                        body: post.body,
-                        keyTakeaways: post.keyTakeaways.join(", "),
+                        tags: toLocalizedListDraft(post.tags),
+                        body: toLocalizedDraft(post.body),
+                        keyTakeaways: toLocalizedListDraft(post.keyTakeaways),
                         externalUrl: post.externalUrl,
                       });
                       setImageFile(null);
@@ -520,13 +504,18 @@ export function BlogAdmin({ canEdit }: { canEdit: boolean }) {
                 </div>
               </div>
 
-              <h3 className="font-bold text-foreground line-clamp-2">{post.title}</h3>
+              <h3 className="font-bold text-foreground line-clamp-2">
+                {getLocalizedText(post.title, "en")}
+              </h3>
               <p className="text-xs text-muted-foreground">
-                {post.date} • {post.readTime}
-                {post.author ? ` • ${post.author}` : ""}
+                {getLocalizedText(post.date, "en")} •{" "}
+                {getLocalizedText(post.readTime, "en")}
+                {getLocalizedText(post.author, "en")
+                  ? ` • ${getLocalizedText(post.author, "en")}`
+                  : ""}
               </p>
               <p className="text-sm text-muted-foreground line-clamp-3">
-                {post.excerpt}
+                {getLocalizedText(post.excerpt, "en")}
               </p>
             </div>
           </div>

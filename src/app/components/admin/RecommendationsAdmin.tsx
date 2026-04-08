@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Save, Star, Trash2, CheckCircle2, Clock3 } from "lucide-react";
 import { useData } from "../../context/DataContext";
-import type { FormCardEffectStyle } from "../../lib/portfolio-content";
+import {
+  buildLocalizedTextValue,
+  getLocalizedText,
+  toLocalizedDraft,
+  type FormCardEffectStyle,
+} from "../../lib/portfolio-content";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
+import { LocalizedFieldGroup } from "./LocalizedFields";
 
 const formCardEffectOptions: Array<{
   value: FormCardEffectStyle;
@@ -110,25 +116,21 @@ export function RecommendationsAdmin({ canEdit }: { canEdit: boolean }) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              value={section.heading}
-              onChange={(event) =>
-                setSection({ ...section, heading: event.target.value })
+            <LocalizedFieldGroup
+              label="Section heading"
+              value={toLocalizedDraft(section.heading)}
+              onChange={(value) =>
+                setSection({ ...section, heading: buildLocalizedTextValue(value) })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Section heading"
             />
-            <input
-              type="text"
-              value={section.intro}
-              onChange={(event) =>
-                setSection({ ...section, intro: event.target.value })
+            <LocalizedFieldGroup
+              label="Section intro"
+              value={toLocalizedDraft(section.intro)}
+              onChange={(value) =>
+                setSection({ ...section, intro: buildLocalizedTextValue(value) })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Section intro"
             />
             <select
               value={section.displayMode}
@@ -158,66 +160,148 @@ export function RecommendationsAdmin({ canEdit }: { canEdit: boolean }) {
               className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
               placeholder="Homepage preview count"
             />
-            <input
-              type="text"
-              value={section.viewAllLabel}
-              onChange={(event) =>
-                setSection({ ...section, viewAllLabel: event.target.value })
+            <LocalizedFieldGroup
+              label="View all label"
+              value={toLocalizedDraft(section.viewAllLabel)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  viewAllLabel: buildLocalizedTextValue(value),
+                })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="View all label"
             />
-            <input
-              type="text"
-              value={section.formHeading}
-              onChange={(event) =>
-                setSection({ ...section, formHeading: event.target.value })
+            <LocalizedFieldGroup
+              label="Form heading"
+              value={toLocalizedDraft(section.formHeading)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  formHeading: buildLocalizedTextValue(value),
+                })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Form heading"
             />
-            <input
-              type="text"
-              value={section.submitLabel}
-              onChange={(event) =>
-                setSection({ ...section, submitLabel: event.target.value })
+            <LocalizedFieldGroup
+              label="Submit button label"
+              value={toLocalizedDraft(section.submitLabel)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  submitLabel: buildLocalizedTextValue(value),
+                })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Submit button label"
             />
-            <textarea
-              value={section.formIntro}
-              onChange={(event) =>
-                setSection({ ...section, formIntro: event.target.value })
+            <LocalizedFieldGroup
+              label="Form introduction"
+              value={toLocalizedDraft(section.formIntro)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  formIntro: buildLocalizedTextValue(value),
+                })
               }
+              disabled={!canEdit}
+              multiline
               rows={3}
-              disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none resize-none"
-              placeholder="Form introduction"
             />
-            <textarea
-              value={section.photoHint}
-              onChange={(event) =>
-                setSection({ ...section, photoHint: event.target.value })
+            <LocalizedFieldGroup
+              label="Name placeholder"
+              value={toLocalizedDraft(section.namePlaceholder)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  namePlaceholder: buildLocalizedTextValue(value),
+                })
               }
-              rows={3}
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none resize-none"
-              placeholder="Photo upload helper text"
             />
-            <textarea
-              value={section.successMessage}
-              onChange={(event) =>
-                setSection({ ...section, successMessage: event.target.value })
+            <LocalizedFieldGroup
+              label="Role placeholder"
+              value={toLocalizedDraft(section.rolePlaceholder)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  rolePlaceholder: buildLocalizedTextValue(value),
+                })
               }
-              rows={3}
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none resize-none md:col-span-2"
-              placeholder="Submission success message"
             />
+            <LocalizedFieldGroup
+              label="Company placeholder"
+              value={toLocalizedDraft(section.companyPlaceholder)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  companyPlaceholder: buildLocalizedTextValue(value),
+                })
+              }
+              disabled={!canEdit}
+            />
+            <LocalizedFieldGroup
+              label="Message placeholder"
+              value={toLocalizedDraft(section.textPlaceholder)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  textPlaceholder: buildLocalizedTextValue(value),
+                })
+              }
+              disabled={!canEdit}
+              multiline
+              rows={3}
+            />
+            <LocalizedFieldGroup
+              label="Photo label"
+              value={toLocalizedDraft(section.photoLabel)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  photoLabel: buildLocalizedTextValue(value),
+                })
+              }
+              disabled={!canEdit}
+            />
+            <LocalizedFieldGroup
+              label="Photo upload helper text"
+              value={toLocalizedDraft(section.photoHint)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  photoHint: buildLocalizedTextValue(value),
+                })
+              }
+              disabled={!canEdit}
+              multiline
+              rows={3}
+            />
+            <LocalizedFieldGroup
+              label="Submitting label"
+              value={toLocalizedDraft(section.submittingLabel)}
+              onChange={(value) =>
+                setSection({
+                  ...section,
+                  submittingLabel: buildLocalizedTextValue(value),
+                })
+              }
+              disabled={!canEdit}
+            />
+            <div className="md:col-span-2">
+              <LocalizedFieldGroup
+                label="Submission success message"
+                value={toLocalizedDraft(section.successMessage)}
+                onChange={(value) =>
+                  setSection({
+                    ...section,
+                    successMessage: buildLocalizedTextValue(value),
+                  })
+                }
+                disabled={!canEdit}
+                multiline
+                rows={3}
+              />
+            </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Recommendation Form Card Effect

@@ -1,10 +1,13 @@
 import { motion } from "motion/react";
 import { useData } from "../context/DataContext";
+import { useLocale } from "../context/LocaleContext";
 import { iconMap } from "../lib/icon-maps";
+import { getLocalizedText } from "../lib/portfolio-content";
 import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function VisionSection() {
   const { content } = useData();
+  const { locale } = useLocale();
   const { vision, site } = content;
 
   return (
@@ -25,7 +28,7 @@ export function VisionSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            {vision.heading}
+            {getLocalizedText(vision.heading, locale)}
           </h2>
           <div className="w-24 h-1 theme-accent-line mx-auto rounded-full" />
         </motion.div>
@@ -41,11 +44,11 @@ export function VisionSection() {
           <div className="relative p-12 rounded-3xl bg-card border-2 theme-accent-panel shadow-lg">
             <div className="relative text-center">
               <p className="text-3xl lg:text-4xl font-bold text-foreground leading-relaxed mb-6">
-                {vision.mainStatement}
+                {getLocalizedText(vision.mainStatement, locale)}
               </p>
               
               <p className="text-xl text-muted-foreground leading-relaxed">
-                {vision.subStatement}
+                {getLocalizedText(vision.subStatement, locale)}
               </p>
             </div>
           </div>
@@ -72,11 +75,11 @@ export function VisionSection() {
                 </div>
                 
                 <h3 className="text-lg font-bold text-foreground mb-3">
-                  {pillar.title}
+                  {getLocalizedText(pillar.title, locale)}
                 </h3>
                 
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  {pillar.description}
+                  {getLocalizedText(pillar.description, locale)}
                 </p>
               </div>
             </motion.div>

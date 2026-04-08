@@ -2,12 +2,15 @@ import { motion } from "motion/react";
 import { Send } from "lucide-react";
 import { useState } from "react";
 import { useData } from "../context/DataContext";
+import { useLocale } from "../context/LocaleContext";
 import { iconMap } from "../lib/icon-maps";
+import { getLocalizedText, getLocalizedTextList } from "../lib/portfolio-content";
 import { EffectCard } from "./EffectCard";
 import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function ContactSection() {
   const { content } = useData();
+  const { locale } = useLocale();
   const { contact, site } = content;
   const [formData, setFormData] = useState({
     name: "",
@@ -45,10 +48,10 @@ export function ContactSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            {contact.heading}
+            {getLocalizedText(contact.heading, locale)}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {contact.intro}
+            {getLocalizedText(contact.intro, locale)}
           </p>
           <div className="w-24 h-1 theme-accent-line mx-auto mt-6 rounded-full" />
         </motion.div>
@@ -69,7 +72,7 @@ export function ContactSection() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                    {contact.nameLabel}
+                    {getLocalizedText(contact.nameLabel, locale)}
                   </label>
                   <input
                     type="text"
@@ -77,14 +80,14 @@ export function ContactSection() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder-muted-foreground theme-accent-field outline-none"
-                    placeholder={contact.namePlaceholder}
+                    placeholder={getLocalizedText(contact.namePlaceholder, locale)}
                     required
                   />
                 </div>
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                    {contact.emailLabel}
+                    {getLocalizedText(contact.emailLabel, locale)}
                   </label>
                   <input
                     type="email"
@@ -92,14 +95,14 @@ export function ContactSection() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder-muted-foreground theme-accent-field outline-none"
-                    placeholder={contact.emailPlaceholder}
+                    placeholder={getLocalizedText(contact.emailPlaceholder, locale)}
                     required
                   />
                 </div>
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                    {contact.messageLabel}
+                    {getLocalizedText(contact.messageLabel, locale)}
                   </label>
                   <textarea
                     id="message"
@@ -107,7 +110,7 @@ export function ContactSection() {
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     rows={6}
                     className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder-muted-foreground theme-accent-field outline-none resize-none"
-                    placeholder={contact.messagePlaceholder}
+                    placeholder={getLocalizedText(contact.messagePlaceholder, locale)}
                     required
                   />
                 </div>
@@ -119,7 +122,7 @@ export function ContactSection() {
                   className="w-full px-8 py-4 theme-accent-button rounded-lg font-medium shadow-lg transition-colors flex items-center justify-center gap-2"
                 >
                   <Send className="w-5 h-5" />
-                  {contact.submitLabel}
+                  {getLocalizedText(contact.submitLabel, locale)}
                 </motion.button>
               </form>
             </EffectCard>
@@ -136,10 +139,10 @@ export function ContactSection() {
             {/* CTA Box */}
             <div className="p-8 rounded-2xl bg-card border theme-accent-panel shadow-sm">
               <h3 className="text-2xl font-bold text-foreground mb-4">
-                {contact.ctaTitle}
+                {getLocalizedText(contact.ctaTitle, locale)}
               </h3>
               <ul className="space-y-3 text-muted-foreground">
-                {contact.opportunities.map((opportunity) => (
+                {getLocalizedTextList(contact.opportunities, locale).map((opportunity) => (
                   <li key={opportunity} className="flex items-start gap-3">
                     <div className="w-2 h-2 rounded-full theme-accent-dot mt-2" />
                     <span>{opportunity}</span>
@@ -151,7 +154,7 @@ export function ContactSection() {
             {/* Social Links */}
             <div className="p-8 rounded-2xl bg-card border border-border shadow-sm">
               <h3 className="text-xl font-bold text-foreground mb-6">
-                {contact.socialHeading}
+                {getLocalizedText(contact.socialHeading, locale)}
               </h3>
               
               <div className="grid grid-cols-2 gap-4">
@@ -176,7 +179,7 @@ export function ContactSection() {
                         />
                       </div>
                       <span className="text-sm text-foreground">
-                        {social.label}
+                        {getLocalizedText(social.label, locale)}
                       </span>
                     </motion.a>
                 )})}

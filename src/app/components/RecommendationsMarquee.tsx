@@ -61,7 +61,7 @@ export function RecommendationsMarquee({
       </Marquee>
 
       {secondRow.length > 0 ? (
-        <Marquee reverse pauseOnHover className="[--duration:28s] [--gap:0.75rem]">
+        <Marquee reverse pauseOnHover className="[--duration:40s] [--gap:0.75rem]">
           {secondRow.map((item, index) => (
             <RecommendationQuoteCard
               key={`${item.id}-row-2-${index}`}

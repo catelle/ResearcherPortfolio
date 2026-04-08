@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { useData } from "../context/DataContext";
+import { useLocale } from "../context/LocaleContext";
+import { getLocalizedText } from "../lib/portfolio-content";
 import { EffectCard } from "./EffectCard";
 
 export function RecommendationForm({
@@ -16,6 +18,7 @@ export function RecommendationForm({
     submittingRecommendation,
     submitRecommendation,
   } = useData();
+  const { locale, copy } = useLocale();
   const [formData, setFormData] = useState({
     name: "",
     role: "",
@@ -34,8 +37,12 @@ export function RecommendationForm({
     const result = await submitRecommendation({
       ...formData,
       photoFile,
-      photoAlt: formData.name ? `Photo of ${formData.name}` : undefined,
-    });
+      photoAlt: formData.name
+        ? locale === "fr"
+          ? `Photo de ${formData.name}`
+          : `Photo of ${formData.name}`
+        : undefined,
+    }, getLocalizedText(content.recommendations.successMessage, locale));
 
     setFeedback(result.message);
 
@@ -72,7 +79,7 @@ export function RecommendationForm({
 
       {!submissionsEnabled ? (
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/8 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
-          Recommendation submissions will appear here once MongoDB and storage are configured.
+          {copy.recommendations.unavailable}
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -84,7 +91,7 @@ export function RecommendationForm({
                 setFormData({ ...formData, name: event.target.value })
               }
               className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder-muted-foreground theme-accent-field outline-none"
-              placeholder="Your name"
+              placeholder={getLocalizedText(content.recommendations.namePlaceholder, locale)}
               required
             />
             <input
@@ -94,7 +101,7 @@ export function RecommendationForm({
                 setFormData({ ...formData, role: event.target.value })
               }
               className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder-muted-foreground theme-accent-field outline-none"
-              placeholder="Role or collaboration context"
+              placeholder={getLocalizedText(content.recommendations.rolePlaceholder, locale)}
               required
             />
           </div>
@@ -106,7 +113,7 @@ export function RecommendationForm({
               setFormData({ ...formData, company: event.target.value })
             }
             className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder-muted-foreground theme-accent-field outline-none"
-            placeholder="Company or team (optional)"
+            placeholder={getLocalizedText(content.recommendations.companyPlaceholder, locale)}
           />
 
           <textarea
@@ -116,13 +123,13 @@ export function RecommendationForm({
             }
             rows={5}
             className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder-muted-foreground theme-accent-field outline-none resize-none"
-            placeholder="Share what it was like working together, the outcome, and what stood out."
+            placeholder={getLocalizedText(content.recommendations.textPlaceholder, locale)}
             required
           />
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              Profile Photo
+              {getLocalizedText(content.recommendations.photoLabel, locale)}
             </label>
             <input
               key={fileInputKey}
@@ -134,11 +141,11 @@ export function RecommendationForm({
               required
             />
             <p className="mt-2 text-xs text-muted-foreground">
-              {content.recommendations.photoHint}
+              {getLocalizedText(content.recommendations.photoHint, locale)}
             </p>
             {photoFile ? (
               <p className="mt-2 text-xs text-foreground">
-                Selected file: {photoFile.name}
+                {copy.recommendations.selectedFile}: {photoFile.name}
               </p>
             ) : null}
           </div>
@@ -151,8 +158,8 @@ export function RecommendationForm({
             className="w-full px-6 py-4 theme-accent-button rounded-xl font-medium disabled:opacity-60 transition-colors"
           >
             {submittingRecommendation
-              ? "Submitting..."
-              : content.recommendations.submitLabel}
+              ? getLocalizedText(content.recommendations.submittingLabel, locale)
+              : getLocalizedText(content.recommendations.submitLabel, locale)}
           </motion.button>
         </form>
       )}

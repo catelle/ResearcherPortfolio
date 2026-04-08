@@ -3,9 +3,16 @@ import { motion } from "motion/react";
 import { Edit2, Plus, Save, Trash2, X } from "lucide-react";
 import { useData } from "../../context/DataContext";
 import {
+  buildLocalizedListValue,
+  buildLocalizedTextValue,
   createContentItemId,
+  getLocalizedText,
+  toLocalizedDraft,
+  toLocalizedListDraft,
+  type LocalizedText,
   type SkillCategory,
 } from "../../lib/portfolio-content";
+import { LocalizedFieldGroup } from "./LocalizedFields";
 
 export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
   const { content, saveContent, saving } = useData();
@@ -14,8 +21,8 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
   const [editingCategory, setEditingCategory] = useState<SkillCategory | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    title: "",
-    skills: "",
+    title: { en: "", fr: "" } as LocalizedText,
+    skills: { en: "", fr: "" } as LocalizedText,
     color: "#a855f7",
   });
 
@@ -25,8 +32,8 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
 
   const resetForm = () => {
     setFormData({
-      title: "",
-      skills: "",
+      title: { en: "", fr: "" },
+      skills: { en: "", fr: "" },
       color: "#a855f7",
     });
     setEditingCategory(null);
@@ -59,11 +66,8 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
 
     const nextCategory: SkillCategory = {
       id: editingCategory?.id ?? createContentItemId("skill"),
-      title: formData.title,
-      skills: formData.skills
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean),
+      title: buildLocalizedTextValue(formData.title),
+      skills: buildLocalizedListValue(formData.skills),
       color: formData.color,
     };
 
@@ -114,25 +118,21 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              value={section.heading}
-              onChange={(event) =>
-                setSection({ ...section, heading: event.target.value })
+            <LocalizedFieldGroup
+              label="Section heading"
+              value={toLocalizedDraft(section.heading)}
+              onChange={(value) =>
+                setSection({ ...section, heading: buildLocalizedTextValue(value) })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Section heading"
             />
-            <input
-              type="text"
-              value={section.intro}
-              onChange={(event) =>
-                setSection({ ...section, intro: event.target.value })
+            <LocalizedFieldGroup
+              label="Section intro"
+              value={toLocalizedDraft(section.intro)}
+              onChange={(value) =>
+                setSection({ ...section, intro: buildLocalizedTextValue(value) })
               }
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-              placeholder="Section intro"
             />
             <input
               type="number"
@@ -162,16 +162,19 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
               className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
               placeholder="Skills shown per category"
             />
-            <input
-              type="text"
-              value={section.viewAllLabel}
-              onChange={(event) =>
-                setSection({ ...section, viewAllLabel: event.target.value })
-              }
-              disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none md:col-span-2"
-              placeholder="View all label"
-            />
+            <div className="md:col-span-2">
+              <LocalizedFieldGroup
+                label="View all label"
+                value={toLocalizedDraft(section.viewAllLabel)}
+                onChange={(value) =>
+                  setSection({
+                    ...section,
+                    viewAllLabel: buildLocalizedTextValue(value),
+                  })
+                }
+                disabled={!canEdit}
+              />
+            </div>
           </div>
 
           <label className="flex items-center gap-3 rounded-lg bg-card border border-border px-4 py-3 text-sm text-foreground">
@@ -238,26 +241,20 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
             </div>
 
             <form onSubmit={handleCategorySubmit} className="space-y-5">
-              <input
-                type="text"
+              <LocalizedFieldGroup
+                label="Category title"
                 value={formData.title}
-                onChange={(event) =>
-                  setFormData({ ...formData, title: event.target.value })
-                }
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none"
-                placeholder="Category title"
-                required
+                onChange={(value) => setFormData({ ...formData, title: value })}
               />
 
-              <textarea
+              <LocalizedFieldGroup
+                label="Skills list"
                 value={formData.skills}
-                onChange={(event) =>
-                  setFormData({ ...formData, skills: event.target.value })
-                }
+                onChange={(value) => setFormData({ ...formData, skills: value })}
+                multiline
                 rows={4}
-                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground outline-none resize-none"
-                placeholder="Skill one, Skill two, Skill three"
-                required
+                englishPlaceholder={"Skill one\nSkill two\nSkill three"}
+                frenchPlaceholder={"Competence un\nCompetence deux\nCompetence trois"}
               />
 
               <input
@@ -305,12 +302,14 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
             className="p-6 rounded-xl bg-card border border-border"
           >
             <div className="flex items-start justify-between gap-4 mb-4">
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: category.color }}
-                />
-                <h3 className="font-bold text-foreground">{category.title}</h3>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: category.color }}
+                  />
+                <h3 className="font-bold text-foreground">
+                  {getLocalizedText(category.title, "en")}
+                </h3>
               </div>
 
               <div className="flex gap-2">
@@ -319,8 +318,8 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
                   onClick={() => {
                     setEditingCategory(category);
                     setFormData({
-                      title: category.title,
-                      skills: category.skills.join(", "),
+                      title: toLocalizedDraft(category.title),
+                      skills: toLocalizedListDraft(category.skills),
                       color: category.color,
                     });
                     setIsFormOpen(true);
@@ -344,10 +343,10 @@ export function SkillsAdmin({ canEdit }: { canEdit: boolean }) {
             <div className="flex flex-wrap gap-2">
               {category.skills.map((skill) => (
                 <span
-                  key={skill}
+                  key={getLocalizedText(skill, "en")}
                   className="px-3 py-1 text-xs rounded-full bg-muted text-foreground border border-border"
                 >
-                  {skill}
+                  {getLocalizedText(skill, "en")}
                 </span>
               ))}
             </div>

@@ -2,12 +2,14 @@ import { motion } from "motion/react";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { Link } from "react-router";
 import { useData } from "../context/DataContext";
+import { useLocale } from "../context/LocaleContext";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { getProjectHref } from "../lib/portfolio-content";
+import { getLocalizedText, getProjectHref } from "../lib/portfolio-content";
 import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function ProjectsSection() {
   const { content } = useData();
+  const { locale, copy } = useLocale();
   const { projects, site } = content;
   const previewItems = projects.items.slice(0, projects.previewCount);
 
@@ -29,10 +31,10 @@ export function ProjectsSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            {projects.heading}
+            {getLocalizedText(projects.heading, locale)}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {projects.intro}
+            {getLocalizedText(projects.intro, locale)}
           </p>
           <div className="w-24 h-1 theme-accent-line mx-auto mt-6 rounded-full" />
         </motion.div>
@@ -52,17 +54,20 @@ export function ProjectsSection() {
                 <div className="relative aspect-[16/10] bg-muted">
                   <ImageWithFallback
                     src={project.image}
-                    alt={project.imageAlt || project.title}
+                    alt={
+                      getLocalizedText(project.imageAlt, locale) ||
+                      getLocalizedText(project.title, locale)
+                    }
                     className="w-full h-full object-cover"
                   />
 
                   <div className="absolute inset-x-0 top-0 flex items-center justify-between p-5">
                     <span className="px-3 py-1 rounded-full text-xs font-medium theme-accent-badge">
-                      {project.category}
+                      {getLocalizedText(project.category, locale)}
                     </span>
                     {project.featured ? (
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-background/85 text-foreground border border-border">
-                        Featured
+                        {copy.common.featured}
                       </span>
                     ) : null}
                   </div>
@@ -71,16 +76,21 @@ export function ProjectsSection() {
                 <div className="p-7 space-y-5">
                   <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">
                     {project.year ? <span>{project.year}</span> : null}
-                    {project.client ? <span>{project.client}</span> : null}
-                    {project.role ? <span>{project.role}</span> : null}
+                    {getLocalizedText(project.client, locale) ? (
+                      <span>{getLocalizedText(project.client, locale)}</span>
+                    ) : null}
+                    {getLocalizedText(project.role, locale) ? (
+                      <span>{getLocalizedText(project.role, locale)}</span>
+                    ) : null}
                   </div>
 
                   <div>
                     <h3 className="text-2xl font-bold text-foreground">
-                      {project.title}
+                      {getLocalizedText(project.title, locale)}
                     </h3>
                     <p className="mt-3 text-muted-foreground leading-relaxed">
-                      {project.summary || project.problem}
+                      {getLocalizedText(project.summary, locale) ||
+                        getLocalizedText(project.problem, locale)}
                     </p>
                   </div>
 
@@ -99,7 +109,7 @@ export function ProjectsSection() {
 
                   {project.impact ? (
                     <p className="text-sm text-foreground/85 leading-relaxed border-l-2 theme-accent-border pl-4">
-                      {project.impact}
+                      {getLocalizedText(project.impact, locale)}
                     </p>
                   ) : null}
 
@@ -108,7 +118,7 @@ export function ProjectsSection() {
                       to={getProjectHref(project)}
                       className="inline-flex items-center gap-2 theme-accent-text font-medium"
                     >
-                      View case study
+                      {copy.projects.viewCaseStudy}
                       <ArrowRight className="w-4 h-4" />
                     </Link>
 
@@ -121,7 +131,7 @@ export function ProjectsSection() {
                             rel="noreferrer"
                             className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
                           >
-                            Demo
+                            {copy.common.demo}
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         ) : null}
@@ -132,7 +142,7 @@ export function ProjectsSection() {
                             rel="noreferrer"
                             className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
                           >
-                            Repo
+                            {copy.common.repo}
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         ) : null}
@@ -151,7 +161,7 @@ export function ProjectsSection() {
               to="/projects"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-muted border border-border text-foreground hover:bg-accent transition-colors"
             >
-              {projects.viewAllLabel}
+              {getLocalizedText(projects.viewAllLabel, locale)}
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

@@ -8,14 +8,16 @@ import {
 } from "motion/react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { iconMap } from "../lib/icon-maps";
-import type { SocialLink } from "../lib/portfolio-content";
+import { getLocalizedText, type Locale, type SocialLink } from "../lib/portfolio-content";
 
 function DockItem({
   item,
   mouseX,
+  locale,
 }: {
   item: SocialLink;
   mouseX: MotionValue<number>;
+  locale: Locale;
 }) {
   const ref = useRef<HTMLAnchorElement | null>(null);
   const distance = useTransform(mouseX, (value) => {
@@ -39,6 +41,7 @@ function DockItem({
     damping: 18,
   });
   const Icon = iconMap[item.icon as keyof typeof iconMap] ?? iconMap.Mail;
+  const label = getLocalizedText(item.label, locale);
 
   return (
     <Tooltip>
@@ -55,19 +58,25 @@ function DockItem({
             scale: animatedScale,
           }}
           className="flex shrink-0 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-accent"
-          aria-label={item.label}
+          aria-label={label}
         >
           <Icon className="size-5" style={{ color: item.color }} />
         </motion.a>
       </TooltipTrigger>
       <TooltipContent side="top" sideOffset={8}>
-        <p>{item.label}</p>
+        <p>{label}</p>
       </TooltipContent>
     </Tooltip>
   );
 }
 
-export function HeroSocialDock({ items }: { items: SocialLink[] }) {
+export function HeroSocialDock({
+  items,
+  locale,
+}: {
+  items: SocialLink[];
+  locale: Locale;
+}) {
   const mouseX = useMotionValue(Number.POSITIVE_INFINITY);
 
   if (items.length === 0) {
@@ -82,7 +91,7 @@ export function HeroSocialDock({ items }: { items: SocialLink[] }) {
         className="flex items-end gap-3 rounded-full border border-border bg-background/80 px-4 py-3 shadow-lg backdrop-blur-md"
       >
         {items.map((item) => (
-          <DockItem key={item.id} item={item} mouseX={mouseX} />
+          <DockItem key={item.id} item={item} mouseX={mouseX} locale={locale} />
         ))}
       </motion.div>
     </div>

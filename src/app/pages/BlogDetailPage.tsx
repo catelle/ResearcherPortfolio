@@ -4,11 +4,13 @@ import { SiteLayout } from "../components/SiteLayout";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { RichTextBlocks } from "../components/RichTextBlocks";
 import { useData } from "../context/DataContext";
-import { findBlogPostBySlug } from "../lib/portfolio-content";
+import { useLocale } from "../context/LocaleContext";
+import { findBlogPostBySlug, getLocalizedText, getLocalizedTextList } from "../lib/portfolio-content";
 
 export function BlogDetailPage() {
   const { slug } = useParams();
   const { content } = useData();
+  const { locale, copy } = useLocale();
   const post = findBlogPostBySlug(content.blog.posts, slug);
 
   if (!post) {
@@ -18,17 +20,17 @@ export function BlogDetailPage() {
           <div className="max-w-4xl mx-auto px-6 lg:px-8">
             <div className="rounded-3xl bg-card border border-border p-10">
               <p className="text-sm uppercase tracking-[0.2em] theme-accent-text mb-4">
-                Article Not Found
+                {copy.blog.notFoundEyebrow}
               </p>
               <h1 className="text-4xl font-bold text-foreground">
-                That article could not be found.
+                {copy.blog.notFoundTitle}
               </h1>
               <Link
                 to="/blog"
                 className="inline-flex items-center gap-2 mt-6 theme-accent-text font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back to blog
+                {copy.blog.backToBlog}
               </Link>
             </div>
           </div>
@@ -46,37 +48,44 @@ export function BlogDetailPage() {
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to blog
+            {copy.blog.backToBlog}
           </Link>
 
           <div className="mt-8">
             <p className="text-sm uppercase tracking-[0.25em] theme-accent-text mb-4">
-              {post.category}
+              {getLocalizedText(post.category, locale)}
             </p>
             <h1 className="text-4xl lg:text-5xl font-bold text-foreground leading-tight">
-              {post.title}
+              {getLocalizedText(post.title, locale)}
             </h1>
             <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
-              {post.excerpt}
+              {getLocalizedText(post.excerpt, locale)}
             </p>
           </div>
 
           <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              {post.date}
+              {getLocalizedText(post.date, locale)}
             </span>
             <span className="inline-flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              {post.readTime}
+              {getLocalizedText(post.readTime, locale)}
             </span>
-            {post.author ? <span>By {post.author}</span> : null}
+            {getLocalizedText(post.author, locale) ? (
+              <span>
+                {copy.blog.by} {getLocalizedText(post.author, locale)}
+              </span>
+            ) : null}
           </div>
 
           <div className="mt-10 rounded-3xl overflow-hidden border border-border bg-card">
             <ImageWithFallback
               src={post.image}
-              alt={post.imageAlt || post.title}
+              alt={
+                getLocalizedText(post.imageAlt, locale) ||
+                getLocalizedText(post.title, locale)
+              }
               className="w-full aspect-[16/9] object-cover"
             />
           </div>
@@ -85,12 +94,12 @@ export function BlogDetailPage() {
             <article className="rounded-3xl bg-card border border-border p-8 lg:p-10">
               {post.body ? (
                 <RichTextBlocks
-                  text={post.body}
+                  text={getLocalizedText(post.body, locale)}
                   className="text-base lg:text-lg text-foreground/85"
                 />
               ) : (
                 <RichTextBlocks
-                  text={post.excerpt}
+                  text={getLocalizedText(post.excerpt, locale)}
                   className="text-base lg:text-lg text-foreground/85"
                 />
               )}
@@ -99,9 +108,9 @@ export function BlogDetailPage() {
             <aside className="space-y-6 lg:sticky lg:top-28">
               {post.tags.length > 0 ? (
                 <div className="rounded-3xl bg-card border border-border p-8">
-                  <h2 className="text-xl font-bold text-foreground mb-4">Topics</h2>
+                  <h2 className="text-xl font-bold text-foreground mb-4">{copy.blog.topics}</h2>
                   <div className="flex flex-wrap gap-2">
-                    {post.tags.map((tag) => (
+                    {getLocalizedTextList(post.tags, locale).map((tag) => (
                       <span
                         key={tag}
                         className="px-3 py-1 text-xs rounded-full bg-muted text-foreground border border-border"
@@ -116,10 +125,10 @@ export function BlogDetailPage() {
               {post.keyTakeaways.length > 0 ? (
                 <div className="rounded-3xl bg-card border border-border p-8">
                   <h2 className="text-xl font-bold text-foreground mb-4">
-                    Key Takeaways
+                    {copy.blog.keyTakeaways}
                   </h2>
                   <ul className="space-y-3 text-muted-foreground">
-                    {post.keyTakeaways.map((takeaway) => (
+                    {getLocalizedTextList(post.keyTakeaways, locale).map((takeaway) => (
                       <li key={takeaway} className="flex items-start gap-3">
                         <span className="mt-2 h-2 w-2 rounded-full theme-accent-dot shrink-0" />
                         <span>{takeaway}</span>
@@ -137,7 +146,7 @@ export function BlogDetailPage() {
                     rel="noreferrer"
                     className="flex items-center justify-between rounded-2xl bg-muted border border-border px-4 py-3 text-foreground hover:bg-accent transition-colors"
                   >
-                    <span>Read external source</span>
+                    <span>{copy.blog.readExternalSource}</span>
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>

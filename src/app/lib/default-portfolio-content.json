@@ -532,7 +532,13 @@
     "formHeading": "Worked With Me?",
     "formIntro": "Share a short recommendation about the collaboration. Submissions are reviewed before they appear publicly.",
     "submitLabel": "Submit Recommendation",
+    "namePlaceholder": "Your name",
+    "rolePlaceholder": "Role or collaboration context",
+    "companyPlaceholder": "Company or team (optional)",
+    "textPlaceholder": "Share what it was like working together, the outcome, and what stood out.",
+    "photoLabel": "Profile Photo",
     "photoHint": "Optional photo. If you skip it, the site will use your initials.",
+    "submittingLabel": "Submitting...",
     "successMessage": "Thanks for sharing your feedback. It has been received and is awaiting review.",
     "formCardEffect": {
       "style": "none",

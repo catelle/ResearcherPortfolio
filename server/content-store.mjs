@@ -40,6 +40,17 @@ function normalizeWithTemplate(template, input) {
   }
 
   if (typeof template === "string") {
+    if (
+      isPlainObject(input) &&
+      typeof input.en === "string" &&
+      typeof input.fr === "string"
+    ) {
+      return {
+        en: input.en,
+        fr: input.fr,
+      };
+    }
+
     return typeof input === "string" ? input : template;
   }
 

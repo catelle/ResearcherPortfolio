@@ -2,31 +2,35 @@ import { motion } from "motion/react";
 import { Menu, X, Settings } from "lucide-react";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import { LocaleToggle } from "./LocaleToggle";
 import { Link, useNavigate, useLocation } from "react-router";
 import { useData } from "../context/DataContext";
+import { useLocale } from "../context/LocaleContext";
+import { getLocalizedText } from "../lib/portfolio-content";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { content } = useData();
+  const { locale, copy } = useLocale();
   const isHomePage = location.pathname === "/";
   const navItems = isHomePage
     ? [
-        { label: "About", href: "#about" },
-        { label: "Projects", href: "#projects" },
-        { label: "Skills", href: "#skills" },
-        { label: "Blog", href: "#blog" },
-        { label: "Feedback", href: "#recommendations" },
-        { label: "Contact", href: "#contact" },
+        { label: copy.navigation.about, href: "#about" },
+        { label: copy.navigation.projects, href: "#projects" },
+        { label: copy.navigation.skills, href: "#skills" },
+        { label: copy.navigation.blog, href: "#blog" },
+        { label: copy.navigation.feedback, href: "#recommendations" },
+        { label: copy.navigation.contact, href: "#contact" },
       ]
     : [
-        { label: "Home", href: "/" },
-        { label: "Projects", href: "/projects" },
-        { label: "Skills", href: "/skills" },
-        { label: "Blog", href: "/blog" },
-        { label: "Feedback", href: "/recommendations" },
-        { label: "Contact", href: "/#contact" },
+        { label: copy.navigation.home, href: "/" },
+        { label: copy.navigation.projects, href: "/projects" },
+        { label: copy.navigation.skills, href: "/skills" },
+        { label: copy.navigation.blog, href: "/blog" },
+        { label: copy.navigation.feedback, href: "/recommendations" },
+        { label: copy.navigation.contact, href: "/#contact" },
       ];
 
   return (
@@ -40,7 +44,7 @@ export function Navigation() {
         <div className="flex items-center justify-between h-20">
           <motion.div whileHover={{ scale: 1.05 }}>
             <Link to="/" className="text-2xl font-bold theme-accent-text">
-              {content.site.brandName}
+              {getLocalizedText(content.site.brandName, locale)}
             </Link>
           </motion.div>
 
@@ -61,12 +65,14 @@ export function Navigation() {
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <Settings className="w-4 h-4" />
-              Admin
+              {copy.navigation.admin}
             </motion.button>
+            <LocaleToggle />
             <ThemeToggle />
           </div>
 
           <div className="md:hidden flex items-center gap-3">
+            <LocaleToggle />
             <ThemeToggle />
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -103,7 +109,7 @@ export function Navigation() {
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-2"
               >
                 <Settings className="w-4 h-4" />
-                Admin
+                {copy.navigation.admin}
               </button>
             </div>
           </motion.div>

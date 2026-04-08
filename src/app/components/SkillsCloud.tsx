@@ -22,7 +22,13 @@ function createRing(items: string[], radiusX: number, radiusY: number) {
   });
 }
 
-export function SkillsCloud({ skills }: { skills: string[] }) {
+export function SkillsCloud({
+  skills,
+  centerLabel = "Live cloud",
+}: {
+  skills: string[];
+  centerLabel?: string;
+}) {
   const uniqueSkills = getUniqueSkills(skills).slice(0, 18);
 
   if (uniqueSkills.length === 0) {
@@ -46,7 +52,7 @@ export function SkillsCloud({ skills }: { skills: string[] }) {
               Skills
             </p>
             <p className="mt-2 text-sm font-semibold text-foreground">
-              Live cloud
+              {centerLabel}
             </p>
           </div>
         </div>

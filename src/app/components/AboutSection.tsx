@@ -1,10 +1,13 @@
 import { motion } from "motion/react";
 import { useData } from "../context/DataContext";
+import { useLocale } from "../context/LocaleContext";
 import { iconMap } from "../lib/icon-maps";
+import { getLocalizedText } from "../lib/portfolio-content";
 import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function AboutSection() {
   const { content } = useData();
+  const { locale } = useLocale();
   const { about, site } = content;
 
   return (
@@ -25,7 +28,7 @@ export function AboutSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            {about.heading}
+            {getLocalizedText(about.heading, locale)}
           </h2>
           <div className="w-24 h-1 theme-accent-line mx-auto rounded-full" />
         </motion.div>
@@ -38,10 +41,10 @@ export function AboutSection() {
           className="max-w-4xl mx-auto mb-20"
         >
           <p className="text-xl text-foreground leading-relaxed mb-6 text-center">
-            {about.introduction}
+            {getLocalizedText(about.introduction, locale)}
           </p>
           <p className="text-lg text-muted-foreground leading-relaxed text-center">
-            {about.description}
+            {getLocalizedText(about.description, locale)}
           </p>
         </motion.div>
 
@@ -66,11 +69,11 @@ export function AboutSection() {
                 </div>
                 
                 <h3 className="text-xl font-bold text-foreground mb-4">
-                  {role.title}
+                  {getLocalizedText(role.title, locale)}
                 </h3>
                 
                 <p className="text-muted-foreground leading-relaxed">
-                  {role.description}
+                  {getLocalizedText(role.description, locale)}
                 </p>
               </div>
             </motion.div>
