@@ -1,0 +1,325 @@
+{
+  "site": {
+    "brandName": "Portfolio",
+    "footerPrefix": "© 2026 Built with",
+    "footerHighlight": "for digital Africa"
+  },
+  "hero": {
+    "eyebrow": "Cybersecurity • Software Development • Tech Founder",
+    "titlePrefix": "Building Safer",
+    "titleAccent": "Digital Africa",
+    "role": "Cybersecurity Engineer & Tech Founder",
+    "description": "Blending cybersecurity expertise, full-stack development, and mission-driven entrepreneurship to create platforms that empower Africa digitally and economically.",
+    "primaryCtaLabel": "View Projects",
+    "secondaryCtaLabel": "Work With Me",
+    "portraitUrl": "https://images.unsplash.com/photo-1637173052677-bb39717a7a4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBhZnJpY2FuJTIwd29tYW4lMjB0ZWNoJTIwZXhlY3V0aXZlJTIwcG9ydHJhaXQlMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwxfHx8fDE3NzE4NDY5OTR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    "portraitAlt": "Professional portrait"
+  },
+  "about": {
+    "heading": "About Me",
+    "introduction": "I'm a cybersecurity engineer and software developer on a mission to build a safer, more accessible digital Africa. My work spans three pillars: securing digital infrastructure, developing innovative platforms, and founding ventures that create real-world impact.",
+    "description": "From building cybercrime awareness platforms to designing solutions for health, education, and culture, I combine technical expertise with strategic vision to create technology that empowers communities and drives economic growth across the continent.",
+    "roles": [
+      {
+        "id": "about-role-1",
+        "icon": "Shield",
+        "title": "Cybersecurity Engineer",
+        "description": "Protecting digital infrastructure and building security-first solutions for emerging markets."
+      },
+      {
+        "id": "about-role-2",
+        "icon": "Code",
+        "title": "Software Developer",
+        "description": "Full-stack development with focus on scalable, user-centric platforms using modern technologies."
+      },
+      {
+        "id": "about-role-3",
+        "icon": "Lightbulb",
+        "title": "Tech Founder",
+        "description": "Building mission-driven startups that solve real problems across education, safety, and innovation."
+      }
+    ]
+  },
+  "projects": {
+    "heading": "Featured Projects",
+    "intro": "Building mission-driven platforms that solve real problems across cybersecurity, education, health, and culture",
+    "items": [
+      {
+        "id": "1",
+        "icon": "Shield",
+        "title": "Psycoti Platform",
+        "category": "Cybersecurity • Social Impact",
+        "problem": "Rising cybercrime victimization across Africa with limited resources for assistance and awareness.",
+        "solution": "Digital platform providing cybercrime reporting, victim support, and educational resources to combat digital threats.",
+        "techStack": [
+          "React",
+          "Node.js",
+          "PostgreSQL",
+          "Security APIs"
+        ],
+        "impact": "Empowering victims and building digital safety awareness across communities",
+        "color": "#a855f7"
+      },
+      {
+        "id": "2",
+        "icon": "Heart",
+        "title": "Psycoti Awareness Center",
+        "category": "Non-Profit • Education",
+        "problem": "Lack of accessible cybersecurity education and support systems in African communities.",
+        "solution": "Association providing workshops, resources, and community programs to increase digital literacy and safety awareness.",
+        "techStack": [
+          "Community Programs",
+          "Educational Content",
+          "Partnerships"
+        ],
+        "impact": "Building grassroots digital safety knowledge across underserved populations",
+        "color": "#d4af37"
+      },
+      {
+        "id": "3",
+        "icon": "Smartphone",
+        "title": "4C Hair Care Platform",
+        "category": "Digital Product • Culture",
+        "problem": "Limited accessible information and community for natural African hair care and styling.",
+        "solution": "Digital platform connecting users with hair care tips, product recommendations, and community support for 4C hair.",
+        "techStack": [
+          "React Native",
+          "Firebase",
+          "Content Management"
+        ],
+        "impact": "Celebrating African beauty and creating inclusive hair care resources",
+        "color": "#10b981"
+      },
+      {
+        "id": "4",
+        "icon": "Brain",
+        "title": "AI & Data Projects",
+        "category": "Machine Learning • Analytics",
+        "problem": "Need for intelligent data-driven solutions in African tech ecosystem.",
+        "solution": "Streamlit applications and AI models for forecasting, analysis, and decision-making tools.",
+        "techStack": [
+          "Python",
+          "Streamlit",
+          "TensorFlow",
+          "Data Science"
+        ],
+        "impact": "Leveraging AI to solve local challenges with global-standard tools",
+        "color": "#8b5cf6"
+      },
+      {
+        "id": "5",
+        "icon": "TrendingUp",
+        "title": "African Language & First Aid Education",
+        "category": "EdTech • Health",
+        "problem": "Language barriers and limited access to critical first aid education in local contexts.",
+        "solution": "Multilingual educational platform teaching first aid and emergency response in African languages.",
+        "techStack": [
+          "React",
+          "Translation APIs",
+          "Video Content",
+          "Progressive Web App"
+        ],
+        "impact": "Democratizing life-saving knowledge across linguistic and geographic boundaries",
+        "color": "#ec4899"
+      }
+    ]
+  },
+  "skills": {
+    "heading": "Technical Skills",
+    "intro": "A hybrid skillset combining security, development, and strategic thinking",
+    "categories": [
+      {
+        "id": "1",
+        "title": "Cybersecurity",
+        "skills": [
+          "Security Architecture",
+          "Threat Analysis",
+          "Penetration Testing",
+          "Incident Response",
+          "Risk Assessment",
+          "Security Compliance"
+        ],
+        "color": "#a855f7"
+      },
+      {
+        "id": "2",
+        "title": "Full-Stack Development",
+        "skills": [
+          "React & React Native",
+          "Node.js & Express",
+          "Python & Django",
+          "PostgreSQL & MongoDB",
+          "REST APIs & GraphQL",
+          "Cloud Deployment"
+        ],
+        "color": "#d4af37"
+      },
+      {
+        "id": "3",
+        "title": "AI & Data Tools",
+        "skills": [
+          "Machine Learning",
+          "Data Analysis",
+          "TensorFlow & PyTorch",
+          "Streamlit Applications",
+          "Forecasting Models",
+          "Data Visualization"
+        ],
+        "color": "#10b981"
+      },
+      {
+        "id": "4",
+        "title": "Product & Leadership",
+        "skills": [
+          "Product Strategy",
+          "Startup Building",
+          "Team Leadership",
+          "User Research",
+          "Agile Methodologies",
+          "Community Building"
+        ],
+        "color": "#ec4899"
+      }
+    ]
+  },
+  "blog": {
+    "heading": "Blog & Insights",
+    "intro": "Thoughts on cybersecurity, innovation, and building technology for Africa",
+    "posts": [
+      {
+        "id": "1",
+        "title": "The State of Cybersecurity in Africa: Challenges and Opportunities",
+        "excerpt": "Exploring the unique cybersecurity landscape across African markets and how we can build more resilient digital infrastructure for the continent.",
+        "category": "Cybersecurity",
+        "date": "February 15, 2026",
+        "readTime": "8 min read",
+        "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80"
+      },
+      {
+        "id": "2",
+        "title": "Building Mission-Driven Startups: Lessons from the Frontlines",
+        "excerpt": "What I've learned from founding tech ventures that prioritize social impact alongside sustainable business models in emerging markets.",
+        "category": "Entrepreneurship",
+        "date": "February 8, 2026",
+        "readTime": "6 min read",
+        "image": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&q=80"
+      },
+      {
+        "id": "3",
+        "title": "Women in Tech: Breaking Barriers in African Innovation",
+        "excerpt": "Reflecting on the journey of being a female founder and engineer in the African tech ecosystem, and paving the way for the next generation.",
+        "category": "Leadership",
+        "date": "January 28, 2026",
+        "readTime": "7 min read",
+        "image": "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800&q=80"
+      },
+      {
+        "id": "4",
+        "title": "AI for Good: Leveraging Machine Learning to Solve Local Challenges",
+        "excerpt": "How we can use AI and data science tools to address pressing problems in healthcare, education, and safety across African communities.",
+        "category": "Technology",
+        "date": "January 20, 2026",
+        "readTime": "9 min read",
+        "image": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80"
+      },
+      {
+        "id": "5",
+        "title": "Product Development for Emerging Markets: A Framework",
+        "excerpt": "A practical approach to building digital products that truly serve African users—from research to launch and beyond.",
+        "category": "Product Strategy",
+        "date": "January 12, 2026",
+        "readTime": "10 min read",
+        "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
+      },
+      {
+        "id": "6",
+        "title": "Digital Safety Education: Why It Matters Now More Than Ever",
+        "excerpt": "The critical importance of cybersecurity awareness and education in protecting African communities from evolving digital threats.",
+        "category": "Education",
+        "date": "January 5, 2026",
+        "readTime": "5 min read",
+        "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80"
+      }
+    ]
+  },
+  "vision": {
+    "heading": "Vision",
+    "mainStatement": "Building scalable tech platforms that empower Africa digitally and economically",
+    "subStatement": "My long-term mission is to create technology infrastructure that doesn't just serve African markets—but transforms them. Building platforms that are secure, accessible, and designed to scale from day one.",
+    "pillars": [
+      {
+        "id": "vision-pillar-1",
+        "icon": "Target",
+        "title": "Digital Safety",
+        "description": "Building platforms and education systems that protect African communities from digital threats"
+      },
+      {
+        "id": "vision-pillar-2",
+        "icon": "Zap",
+        "title": "Innovation",
+        "description": "Leveraging cutting-edge technology to solve local challenges with global-standard solutions"
+      },
+      {
+        "id": "vision-pillar-3",
+        "icon": "Users",
+        "title": "Empowerment",
+        "description": "Creating accessible tools and knowledge that enable economic and social progress"
+      },
+      {
+        "id": "vision-pillar-4",
+        "icon": "Globe2",
+        "title": "Scale",
+        "description": "Designing platforms built to serve millions across borders and languages"
+      }
+    ]
+  },
+  "contact": {
+    "heading": "Let's Collaborate",
+    "intro": "Interested in working together on impactful projects? Reach out for collaborations, speaking opportunities, or partnerships.",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your.email@example.com",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Tell me about your project or opportunity...",
+    "submitLabel": "Send Message",
+    "ctaTitle": "Open to Opportunities",
+    "opportunities": [
+      "Speaking engagements & conference talks",
+      "Startup partnerships & investor collaborations",
+      "Remote tech roles with global impact",
+      "Advisory roles in African tech innovation"
+    ],
+    "socialHeading": "Connect With Me",
+    "socialLinks": [
+      {
+        "id": "social-1",
+        "icon": "Linkedin",
+        "label": "LinkedIn",
+        "href": "#",
+        "color": "#0077b5"
+      },
+      {
+        "id": "social-2",
+        "icon": "Twitter",
+        "label": "Twitter",
+        "href": "#",
+        "color": "#1da1f2"
+      },
+      {
+        "id": "social-3",
+        "icon": "Github",
+        "label": "GitHub",
+        "href": "#",
+        "color": "#333333"
+      },
+      {
+        "id": "social-4",
+        "icon": "Mail",
+        "label": "Email",
+        "href": "#",
+        "color": "#a855f7"
+      }
+    ]
+  }
+}

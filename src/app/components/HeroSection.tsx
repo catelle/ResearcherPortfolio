@@ -1,0 +1,111 @@
+import { motion } from "motion/react";
+import { ChevronDown } from "lucide-react";
+import { useData } from "../context/DataContext";
+
+export function HeroSection() {
+  const { content } = useData();
+  const { hero } = content;
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      {/* Subtle background accent - only in dark mode */}
+      <div className="absolute inset-0 dark:opacity-100 opacity-0">
+        <motion.div
+          className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#a855f7] rounded-full opacity-10 blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.15, 0.1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-32">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Text content */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="inline-block mb-6 px-4 py-2 rounded-full bg-muted border border-border"
+            >
+              <span className="text-sm tracking-wide text-muted-foreground">
+                {hero.eyebrow}
+              </span>
+            </motion.div>
+
+            <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-foreground">
+              <span className="block">{hero.titlePrefix}</span>
+              <span className="block text-[#a855f7]">
+                {hero.titleAccent}
+              </span>
+            </h1>
+
+            <p className="text-xl lg:text-2xl text-foreground mb-4 leading-relaxed">
+              {hero.role}
+            </p>
+
+            <p className="text-lg text-muted-foreground mb-10 leading-relaxed max-w-xl">
+              {hero.description}
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <motion.a
+                href="#projects"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-[#a855f7] text-white rounded-lg font-medium shadow-lg hover:bg-[#9333ea] transition-colors"
+              >
+                {hero.primaryCtaLabel}
+              </motion.a>
+
+              <motion.a
+                href="#contact"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-muted text-foreground rounded-lg font-medium border border-border hover:bg-accent transition-colors"
+              >
+                {hero.secondaryCtaLabel}
+              </motion.a>
+            </div>
+          </motion.div>
+
+          {/* Portrait */}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="relative"
+          >
+            <div className="relative rounded-2xl overflow-hidden border-2 border-[#a855f7]/30">
+              <img
+                src={hero.portraitUrl}
+                alt={hero.portraitAlt}
+                className="w-full h-auto aspect-[3/4] object-cover"
+              />
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        <ChevronDown className="w-8 h-8 text-muted-foreground" />
+      </motion.div>
+    </section>
+  );
+}
