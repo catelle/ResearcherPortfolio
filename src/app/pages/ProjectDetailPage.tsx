@@ -6,11 +6,13 @@ import { RichTextBlocks } from "../components/RichTextBlocks";
 import { useData } from "../context/DataContext";
 import { useLocale } from "../context/LocaleContext";
 import { findProjectBySlug, getLocalizedText, getLocalizedTextList } from "../lib/portfolio-content";
+import { buildPublicSitePath } from "../lib/site-routing";
 
 export function ProjectDetailPage() {
   const { slug } = useParams();
-  const { content } = useData();
+  const { content, activeSite } = useData();
   const { locale, copy } = useLocale();
+  const currentSiteSlug = activeSite?.slug ?? null;
   const project = findProjectBySlug(content.projects.items, slug);
 
   if (!project) {
@@ -26,7 +28,7 @@ export function ProjectDetailPage() {
                 {copy.projects.notFoundTitle}
               </h1>
               <Link
-                to="/projects"
+                to={buildPublicSitePath(currentSiteSlug, "/projects")}
                 className="inline-flex items-center gap-2 mt-6 theme-accent-text font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -44,7 +46,7 @@ export function ProjectDetailPage() {
       <section className="pt-36 pb-24">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <Link
-            to="/projects"
+            to={buildPublicSitePath(currentSiteSlug, "/projects")}
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

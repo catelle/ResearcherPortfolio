@@ -29,6 +29,11 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
     setSection(content.vision);
   }, [content.vision]);
 
+  const getPillarFormIcon = (icon?: string) =>
+    visionIconOptions.includes(icon as (typeof visionIconOptions)[number])
+      ? (icon as (typeof visionIconOptions)[number])
+      : visionIconOptions[0];
+
   const resetForm = () => {
     setFormData({
       icon: visionIconOptions[0],
@@ -60,9 +65,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
     return result;
   };
 
-  const handlePillarSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
+  const handlePillarSubmit = async () => {
     const nextPillar: HighlightCard = {
       id: editingPillar?.id ?? createContentItemId("vision-pillar"),
       icon: formData.icon,
@@ -91,8 +94,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
     }
   };
 
-  const handleSave = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSave = async () => {
     await persistSection(section, "Vision section saved successfully.");
   };
 
@@ -118,8 +120,8 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          type="submit"
-          form="vision-admin-form"
+          type="button"
+          onClick={() => void handleSave()}
           disabled={!canEdit || saving}
           className="px-6 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors flex items-center gap-2"
         >
@@ -130,7 +132,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
 
       {feedback ? <p className="text-sm text-muted-foreground">{feedback}</p> : null}
 
-      <form id="vision-admin-form" onSubmit={handleSave} className="space-y-8">
+      <div className="space-y-8">
         <div className="p-8 rounded-2xl bg-card border border-border space-y-6">
           <LocalizedFieldGroup
             label="Section heading"
@@ -183,7 +185,10 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
               type="button"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setIsFormOpen(true)}
+              onClick={() => {
+                resetForm();
+                setIsFormOpen(true);
+              }}
               disabled={!canEdit}
               className="px-5 py-3 bg-muted text-foreground rounded-lg font-medium hover:bg-accent disabled:opacity-60 transition-colors flex items-center gap-2"
             >
@@ -207,7 +212,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
                 </button>
               </div>
 
-              <form onSubmit={handlePillarSubmit} className="space-y-5">
+              <div className="space-y-5">
                 <select
                   value={formData.icon}
                   onChange={(event) =>
@@ -243,9 +248,10 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
 
                 <div className="flex gap-3">
                   <motion.button
-                    type="submit"
+                    type="button"
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
+                    onClick={() => void handlePillarSubmit()}
                     disabled={saving}
                     className="px-5 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors"
                   >
@@ -265,7 +271,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
                     Cancel
                   </motion.button>
                 </div>
-              </form>
+              </div>
             </div>
           ) : null}
 
@@ -289,7 +295,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
                       onClick={() => {
                         setEditingPillar(pillar);
                         setFormData({
-                          icon: pillar.icon as typeof formData.icon,
+                          icon: getPillarFormIcon(pillar.icon),
                           title: toLocalizedDraft(pillar.title),
                           description: toLocalizedDraft(pillar.description),
                         });
@@ -318,7 +324,7 @@ export function VisionAdmin({ canEdit }: { canEdit: boolean }) {
             ))}
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

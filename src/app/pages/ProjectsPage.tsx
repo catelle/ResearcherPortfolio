@@ -11,12 +11,14 @@ import {
   getLocalizedText,
   getProjectHref,
 } from "../lib/portfolio-content";
+import { buildPublicSiteHomePath } from "../lib/site-routing";
 
 const PAGE_SIZE = 6;
 
 export function ProjectsPage() {
-  const { content } = useData();
+  const { content, activeSite } = useData();
   const { locale, copy } = useLocale();
+  const currentSiteSlug = activeSite?.slug ?? null;
   const orderedItems = content.projects.items;
   const categories = Array.from(
     new Set(
@@ -57,7 +59,7 @@ export function ProjectsPage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-3 mb-10">
             <Link
-              to="/"
+              to={buildPublicSiteHomePath(currentSiteSlug)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -157,7 +159,7 @@ export function ProjectsPage() {
 
                     <div className="mt-6 flex items-center justify-between gap-4">
                       <Link
-                        to={getProjectHref(project)}
+                        to={getProjectHref(project, currentSiteSlug)}
                         className="inline-flex items-center gap-2 theme-accent-text font-medium"
                       >
                         {copy.projects.viewFullDetails}

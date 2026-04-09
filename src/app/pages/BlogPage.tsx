@@ -12,12 +12,14 @@ import {
   getLocalizedText,
   getLocalizedTextList,
 } from "../lib/portfolio-content";
+import { buildPublicSiteHomePath } from "../lib/site-routing";
 
 const PAGE_SIZE = 6;
 
 export function BlogPage() {
-  const { content } = useData();
+  const { content, activeSite } = useData();
   const { locale, copy } = useLocale();
+  const currentSiteSlug = activeSite?.slug ?? null;
   const orderedPosts = content.blog.posts;
   const categories = Array.from(
     new Set(
@@ -58,7 +60,7 @@ export function BlogPage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-3 mb-10">
             <Link
-              to="/"
+              to={buildPublicSiteHomePath(currentSiteSlug)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -103,7 +105,7 @@ export function BlogPage() {
                 className="group"
               >
                 <Link
-                  to={getBlogPostHref(post)}
+                  to={getBlogPostHref(post, currentSiteSlug)}
                   className="block h-full rounded-3xl bg-card border border-border theme-accent-hover-border shadow-sm overflow-hidden"
                 >
                   <div className="relative h-56 bg-muted">

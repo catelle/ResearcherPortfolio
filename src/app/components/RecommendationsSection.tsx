@@ -11,11 +11,13 @@ import {
   getLocalizedText,
 } from "../lib/portfolio-content";
 import { SectionVisualBackground } from "./SectionVisualBackground";
+import { buildPublicSitePath } from "../lib/site-routing";
 
 export function RecommendationsSection() {
-  const { content } = useData();
+  const { content, activeSite } = useData();
   const { locale } = useLocale();
   const { recommendations, site } = content;
+  const currentSiteSlug = activeSite?.slug ?? null;
   const approvedItems = getApprovedRecommendations(recommendations.items);
   const orderedItems = [...approvedItems].sort(
     (left, right) => Number(right.featured) - Number(left.featured),
@@ -59,7 +61,7 @@ export function RecommendationsSection() {
             {orderedItems.length > Math.max(8, recommendations.previewCount) ? (
               <div className="flex justify-center">
                 <Link
-                  to="/recommendations"
+                  to={buildPublicSitePath(currentSiteSlug, "/recommendations")}
                   className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-muted text-foreground hover:bg-accent transition-colors"
                 >
                   {getLocalizedText(recommendations.viewAllLabel, locale)}
@@ -92,7 +94,7 @@ export function RecommendationsSection() {
               {approvedItems.length > previewItems.length ? (
                 <div className="pt-2">
                   <Link
-                    to="/recommendations"
+                    to={buildPublicSitePath(currentSiteSlug, "/recommendations")}
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-muted text-foreground hover:bg-accent transition-colors"
                   >
                     {getLocalizedText(recommendations.viewAllLabel, locale)}

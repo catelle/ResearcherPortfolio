@@ -7,13 +7,15 @@ import {
   getLocalizedText,
   getLocalizedTextList,
 } from "../lib/portfolio-content";
+import { buildPublicSitePath } from "../lib/site-routing";
 import { SkillsCloud } from "./SkillsCloud";
 import { SectionVisualBackground } from "./SectionVisualBackground";
 
 export function SkillsSection() {
-  const { content } = useData();
+  const { content, activeSite } = useData();
   const { locale, copy } = useLocale();
   const { skills, site } = content;
+  const currentSiteSlug = activeSite?.slug ?? null;
   const previewCategories = skills.categories.slice(0, skills.previewCategoryCount);
   const allSkills = skills.categories.flatMap((category) =>
     getLocalizedTextList(category.skills, locale),
@@ -109,7 +111,7 @@ export function SkillsSection() {
         {skills.categories.length > previewCategories.length ? (
           <div className="flex justify-center mt-12">
             <Link
-              to="/skills"
+              to={buildPublicSitePath(currentSiteSlug, "/skills")}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-muted border border-border text-foreground hover:bg-accent transition-colors"
             >
               {getLocalizedText(skills.viewAllLabel, locale)}

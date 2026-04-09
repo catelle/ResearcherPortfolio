@@ -26,8 +26,24 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
   });
 
   useEffect(() => {
-    setSection(content.about);
+    setSection({
+      ...content.about,
+      roles: Array.isArray(content.about.roles) ? content.about.roles : [],
+    });
   }, [content.about]);
+
+  const getRoleFormIcon = (icon?: string) =>
+    roleIconOptions.includes(icon as (typeof roleIconOptions)[number])
+      ? (icon as (typeof roleIconOptions)[number])
+      : roleIconOptions[0];
+
+  const getRoleCards = () =>
+    Array.isArray(section.roles)
+      ? section.roles.filter(
+          (role): role is HighlightCard =>
+            Boolean(role) && typeof role.id === "string",
+        )
+      : [];
 
   const resetForm = () => {
     setFormData({
@@ -60,9 +76,8 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
     return result;
   };
 
-  const handleRoleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
+  const handleRoleSubmit = async () => {
+    const currentRoles = getRoleCards();
     const nextRole: HighlightCard = {
       id: editingRole?.id ?? createContentItemId("about-role"),
       icon: formData.icon,
@@ -73,10 +88,10 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
     const nextSection = {
       ...section,
       roles: editingRole
-        ? section.roles.map((item) =>
+        ? currentRoles.map((item) =>
             item.id === editingRole.id ? nextRole : item,
           )
-        : [...section.roles, nextRole],
+        : [...currentRoles, nextRole],
     };
 
     const result = await persistSection(
@@ -91,15 +106,15 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
     }
   };
 
-  const handleSave = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSave = async () => {
     await persistSection(section, "About section saved successfully.");
   };
 
   const handleDelete = async (roleId: string) => {
+    const currentRoles = getRoleCards();
     const nextSection = {
       ...section,
-      roles: section.roles.filter((item) => item.id !== roleId),
+      roles: currentRoles.filter((item) => item.id !== roleId),
     };
 
     await persistSection(nextSection, "Role card deleted successfully.");
@@ -118,8 +133,8 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          type="submit"
-          form="about-admin-form"
+          type="button"
+          onClick={() => void handleSave()}
           disabled={!canEdit || saving}
           className="px-6 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors flex items-center gap-2"
         >
@@ -130,7 +145,7 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
 
       {feedback ? <p className="text-sm text-muted-foreground">{feedback}</p> : null}
 
-      <form id="about-admin-form" onSubmit={handleSave} className="space-y-8">
+      <div className="space-y-8">
         <div className="p-8 rounded-2xl bg-card border border-border space-y-6">
           <LocalizedFieldGroup
             label="Section heading"
@@ -185,7 +200,10 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
               type="button"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setIsFormOpen(true)}
+              onClick={() => {
+                resetForm();
+                setIsFormOpen(true);
+              }}
               disabled={!canEdit}
               className="px-5 py-3 bg-muted text-foreground rounded-lg font-medium hover:bg-accent disabled:opacity-60 transition-colors flex items-center gap-2"
             >
@@ -195,86 +213,98 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
           </div>
 
           {isFormOpen ? (
-            <div className="p-6 rounded-xl border border-border bg-background">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="text-lg font-semibold text-foreground">
-                  {editingRole ? "Edit Role" : "Add Role"}
-                </h4>
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleRoleSubmit} className="space-y-5">
-                <select
-                  value={formData.icon}
-                  onChange={(event) =>
-                    setFormData({
-                      ...formData,
-                      icon: event.target.value as typeof formData.icon,
-                    })
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
-                >
-                  {roleIconOptions.map((icon) => (
-                    <option key={icon} value={icon}>
-                      {icon}
-                    </option>
-                  ))}
-                </select>
-
-                <LocalizedFieldGroup
-                  label="Role title"
-                  value={formData.title}
-                  onChange={(value) => setFormData({ ...formData, title: value })}
-                  englishPlaceholder="Cybersecurity Engineer"
-                  frenchPlaceholder="Ingenieure cybersécurité"
-                />
-
-                <LocalizedFieldGroup
-                  label="Role description"
-                  value={formData.description}
-                  onChange={(value) =>
-                    setFormData({ ...formData, description: value })
-                  }
-                  multiline
-                  rows={3}
-                />
-
-                <div className="flex gap-3">
-                  <motion.button
-                    type="submit"
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    disabled={saving}
-                    className="px-5 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors"
-                  >
-                    {saving
-                      ? "Syncing..."
-                      : editingRole
-                        ? "Update Role"
-                        : "Add Role"}
-                  </motion.button>
-                  <motion.button
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-card border border-border rounded-2xl p-8 max-w-xl w-full"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="text-2xl font-bold text-foreground">
+                    {editingRole ? "Edit Role" : "Add Role"}
+                  </h4>
+                  <button
                     type="button"
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
                     onClick={resetForm}
-                    className="px-5 py-3 bg-muted text-foreground rounded-lg font-medium hover:bg-accent transition-colors"
+                    className="text-muted-foreground hover:text-foreground"
                   >
-                    Cancel
-                  </motion.button>
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-              </form>
+
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void handleRoleSubmit();
+                  }}
+                  className="space-y-5"
+                >
+                  <select
+                    value={formData.icon}
+                    onChange={(event) =>
+                      setFormData({
+                        ...formData,
+                        icon: event.target.value as typeof formData.icon,
+                      })
+                    }
+                    className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground outline-none"
+                  >
+                    {roleIconOptions.map((icon) => (
+                      <option key={icon} value={icon}>
+                        {icon}
+                      </option>
+                    ))}
+                  </select>
+
+                  <LocalizedFieldGroup
+                    label="Role title"
+                    value={formData.title}
+                    onChange={(value) => setFormData({ ...formData, title: value })}
+                    englishPlaceholder="Data Analyst"
+                    frenchPlaceholder="Analyste de donnees"
+                  />
+
+                  <LocalizedFieldGroup
+                    label="Role description"
+                    value={formData.description}
+                    onChange={(value) =>
+                      setFormData({ ...formData, description: value })
+                    }
+                    multiline
+                    rows={3}
+                  />
+
+                  <div className="flex gap-3">
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      disabled={saving}
+                      className="px-5 py-3 theme-accent-button rounded-lg font-medium disabled:opacity-60 transition-colors"
+                    >
+                      {saving
+                        ? "Syncing..."
+                        : editingRole
+                          ? "Update Role"
+                          : "Add Role"}
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={resetForm}
+                      className="px-5 py-3 bg-muted text-foreground rounded-lg font-medium hover:bg-accent transition-colors"
+                    >
+                      Cancel
+                    </motion.button>
+                  </div>
+                </form>
+              </motion.div>
             </div>
           ) : null}
 
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {section.roles.map((role) => (
+            {getRoleCards().map((role) => (
               <div
                 key={role.id}
                 className="p-5 rounded-xl bg-background border border-border space-y-3"
@@ -293,7 +323,7 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
                       onClick={() => {
                         setEditingRole(role);
                         setFormData({
-                          icon: role.icon as typeof formData.icon,
+                          icon: getRoleFormIcon(role.icon),
                           title: toLocalizedDraft(role.title),
                           description: toLocalizedDraft(role.description),
                         });
@@ -322,7 +352,7 @@ export function AboutAdmin({ canEdit }: { canEdit: boolean }) {
             ))}
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -10,11 +10,13 @@ import {
   getLocalizedTextList,
 } from "../lib/portfolio-content";
 import { SectionVisualBackground } from "./SectionVisualBackground";
+import { buildPublicSitePath } from "../lib/site-routing";
 
 export function BlogSection() {
-  const { content } = useData();
+  const { content, activeSite } = useData();
   const { locale, copy } = useLocale();
   const { blog, site } = content;
+  const currentSiteSlug = activeSite?.slug ?? null;
   const previewItems = blog.posts.slice(0, blog.previewCount);
 
   return (
@@ -55,7 +57,7 @@ export function BlogSection() {
               className="group"
             >
               <Link
-                to={getBlogPostHref(post)}
+                to={getBlogPostHref(post, currentSiteSlug)}
                 className="block h-full rounded-3xl bg-card border border-border theme-accent-hover-border transition-all duration-300 shadow-sm overflow-hidden"
               >
                 <div className="relative h-52 overflow-hidden bg-muted">
@@ -127,7 +129,7 @@ export function BlogSection() {
         {blog.posts.length > previewItems.length ? (
           <div className="flex justify-center mt-12">
             <Link
-              to="/blog"
+              to={buildPublicSitePath(currentSiteSlug, "/blog")}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-card border border-border text-foreground hover:bg-accent transition-colors"
             >
               {getLocalizedText(blog.viewAllLabel, locale)}

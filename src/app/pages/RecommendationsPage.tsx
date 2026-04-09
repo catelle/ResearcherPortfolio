@@ -9,12 +9,14 @@ import { RecommendationsMarquee } from "../components/RecommendationsMarquee";
 import { useData } from "../context/DataContext";
 import { useLocale } from "../context/LocaleContext";
 import { getApprovedRecommendations, getLocalizedText } from "../lib/portfolio-content";
+import { buildPublicSiteHomePath } from "../lib/site-routing";
 
 const PAGE_SIZE = 6;
 
 export function RecommendationsPage() {
-  const { content } = useData();
+  const { content, activeSite } = useData();
   const { locale, copy } = useLocale();
+  const currentSiteSlug = activeSite?.slug ?? null;
   const showMarquee = content.recommendations.displayMode === "marquee";
   const approvedItems = getApprovedRecommendations(content.recommendations.items);
   const orderedItems = [...approvedItems].sort(
@@ -35,7 +37,7 @@ export function RecommendationsPage() {
       <section className="pb-24">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <Link
-            to="/"
+            to={buildPublicSiteHomePath(currentSiteSlug)}
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-10"
           >
             <ArrowLeft className="w-4 h-4" />

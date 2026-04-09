@@ -272,9 +272,36 @@ export interface ContentMeta {
   updatedAt: string | null;
   updatedBy: string | null;
   isMongoConfigured: boolean;
-  isSupabaseConfigured: boolean;
+  isAuthConfigured: boolean;
   isStorageConfigured: boolean;
   canPersist: boolean;
+  site: PortfolioSiteSummary | null;
+  publishedAt: string | null;
+}
+
+export interface DomainVerificationChallenge {
+  type: string;
+  domain: string;
+  value: string;
+  reason: string;
+}
+
+export type CustomDomainStatus = "none" | "pending" | "verified" | "error";
+
+export interface PortfolioSiteSummary {
+  id: string;
+  name: string;
+  slug: string;
+  status: "draft" | "published";
+  publicUrl: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+  publishedAt: string | null;
+  customDomain: string;
+  customDomainStatus: CustomDomainStatus;
+  customDomainVerification: DomainVerificationChallenge[];
+  customDomainError: string;
+  subdomainUrl: string;
 }
 
 export interface SaveResult {
@@ -300,9 +327,11 @@ export const defaultContentMeta: ContentMeta = {
   updatedAt: null,
   updatedBy: null,
   isMongoConfigured: false,
-  isSupabaseConfigured: false,
+  isAuthConfigured: false,
   isStorageConfigured: false,
   canPersist: false,
+  site: null,
+  publishedAt: null,
 };
 
 export function getDefaultPortfolioContent(): PortfolioContent {
@@ -429,8 +458,25 @@ export function getProjectSlug(project: Project) {
   return titleSegment ? `${titleSegment}-${project.id}` : project.id;
 }
 
-export function getProjectHref(project: Project) {
-  return `/projects/${getProjectSlug(project)}`;
+function shouldUseSlugRoutePrefix(siteSlug?: string | null) {
+  if (!siteSlug) {
+    return false;
+  }
+
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  const prefix = `/@/${siteSlug}`;
+  return (
+    window.location.pathname === prefix ||
+    window.location.pathname.startsWith(`${prefix}/`)
+  );
+}
+
+export function getProjectHref(project: Project, siteSlug?: string | null) {
+  const basePath = shouldUseSlugRoutePrefix(siteSlug) ? `/@/${siteSlug}` : "";
+  return `${basePath}/projects/${getProjectSlug(project)}`;
 }
 
 export function getBlogPostSlug(post: BlogPost) {
@@ -438,8 +484,9 @@ export function getBlogPostSlug(post: BlogPost) {
   return titleSegment ? `${titleSegment}-${post.id}` : post.id;
 }
 
-export function getBlogPostHref(post: BlogPost) {
-  return `/blog/${getBlogPostSlug(post)}`;
+export function getBlogPostHref(post: BlogPost, siteSlug?: string | null) {
+  const basePath = shouldUseSlugRoutePrefix(siteSlug) ? `/@/${siteSlug}` : "";
+  return `${basePath}/blog/${getBlogPostSlug(post)}`;
 }
 
 export function findProjectBySlug(items: Project[], slug: string | undefined) {

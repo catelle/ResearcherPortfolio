@@ -6,11 +6,13 @@ import { useLocale } from "../context/LocaleContext";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { getLocalizedText, getProjectHref } from "../lib/portfolio-content";
 import { SectionVisualBackground } from "./SectionVisualBackground";
+import { buildPublicSitePath } from "../lib/site-routing";
 
 export function ProjectsSection() {
-  const { content } = useData();
+  const { content, activeSite } = useData();
   const { locale, copy } = useLocale();
   const { projects, site } = content;
+  const currentSiteSlug = activeSite?.slug ?? null;
   const previewItems = projects.items.slice(0, projects.previewCount);
 
   return (
@@ -115,7 +117,7 @@ export function ProjectsSection() {
 
                   <div className="flex items-center justify-between gap-4 pt-2">
                     <Link
-                      to={getProjectHref(project)}
+                      to={getProjectHref(project, currentSiteSlug)}
                       className="inline-flex items-center gap-2 theme-accent-text font-medium"
                     >
                       {copy.projects.viewCaseStudy}
@@ -158,7 +160,7 @@ export function ProjectsSection() {
         {projects.items.length > previewItems.length ? (
           <div className="flex justify-center mt-12">
             <Link
-              to="/projects"
+              to={buildPublicSitePath(currentSiteSlug, "/projects")}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-muted border border-border text-foreground hover:bg-accent transition-colors"
             >
               {getLocalizedText(projects.viewAllLabel, locale)}

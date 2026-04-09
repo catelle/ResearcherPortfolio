@@ -7,30 +7,73 @@ import { Link, useNavigate, useLocation } from "react-router";
 import { useData } from "../context/DataContext";
 import { useLocale } from "../context/LocaleContext";
 import { getLocalizedText } from "../lib/portfolio-content";
+import {
+  buildPublicSiteHomePath,
+  buildPublicSitePath,
+  buildPublicSiteSectionHref,
+  isPublicHomePath,
+} from "../lib/site-routing";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { content } = useData();
+  const { content, activeSite } = useData();
   const { locale, copy } = useLocale();
-  const isHomePage = location.pathname === "/";
+  const currentSiteSlug = activeSite?.slug ?? null;
+  const isHomePage = isPublicHomePath(location.pathname, currentSiteSlug);
   const navItems = isHomePage
     ? [
-        { label: copy.navigation.about, href: "#about" },
-        { label: copy.navigation.projects, href: "#projects" },
-        { label: copy.navigation.skills, href: "#skills" },
-        { label: copy.navigation.blog, href: "#blog" },
-        { label: copy.navigation.feedback, href: "#recommendations" },
-        { label: copy.navigation.contact, href: "#contact" },
+        {
+          label: copy.navigation.about,
+          href: buildPublicSiteSectionHref(currentSiteSlug, "about", true),
+        },
+        {
+          label: copy.navigation.projects,
+          href: buildPublicSiteSectionHref(currentSiteSlug, "projects", true),
+        },
+        {
+          label: copy.navigation.skills,
+          href: buildPublicSiteSectionHref(currentSiteSlug, "skills", true),
+        },
+        {
+          label: copy.navigation.blog,
+          href: buildPublicSiteSectionHref(currentSiteSlug, "blog", true),
+        },
+        {
+          label: copy.navigation.feedback,
+          href: buildPublicSiteSectionHref(currentSiteSlug, "recommendations", true),
+        },
+        {
+          label: copy.navigation.contact,
+          href: buildPublicSiteSectionHref(currentSiteSlug, "contact", true),
+        },
       ]
     : [
-        { label: copy.navigation.home, href: "/" },
-        { label: copy.navigation.projects, href: "/projects" },
-        { label: copy.navigation.skills, href: "/skills" },
-        { label: copy.navigation.blog, href: "/blog" },
-        { label: copy.navigation.feedback, href: "/recommendations" },
-        { label: copy.navigation.contact, href: "/#contact" },
+        {
+          label: copy.navigation.home,
+          href: buildPublicSiteHomePath(currentSiteSlug),
+        },
+        {
+          label: copy.navigation.projects,
+          href: buildPublicSitePath(currentSiteSlug, "/projects"),
+        },
+        {
+          label: copy.navigation.skills,
+          href: buildPublicSitePath(currentSiteSlug, "/skills"),
+        },
+        {
+          label: copy.navigation.blog,
+          href: buildPublicSitePath(currentSiteSlug, "/blog"),
+        },
+        {
+          label: copy.navigation.feedback,
+          href: buildPublicSitePath(currentSiteSlug, "/recommendations"),
+        },
+        {
+          label: copy.navigation.contact,
+          href: buildPublicSiteSectionHref(currentSiteSlug, "contact", false),
+        },
       ];
 
   return (
@@ -43,7 +86,10 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <motion.div whileHover={{ scale: 1.05 }}>
-            <Link to="/" className="text-2xl font-bold theme-accent-text">
+            <Link
+              to={buildPublicSiteHomePath(currentSiteSlug)}
+              className="text-2xl font-bold theme-accent-text"
+            >
               {getLocalizedText(content.site.brandName, locale)}
             </Link>
           </motion.div>

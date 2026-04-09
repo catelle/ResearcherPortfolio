@@ -192,8 +192,7 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
     }
   };
 
-  const handleSave = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSave = async () => {
     let nextFormData = formData;
 
     if (portraitFile) {
@@ -281,8 +280,8 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
         </div>
 
         <motion.button
-          type="submit"
-          form="site-admin-form"
+          type="button"
+          onClick={() => void handleSave()}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           disabled={!canEdit || saving || uploading}
@@ -297,7 +296,7 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
         <p className="text-sm text-muted-foreground">{feedback}</p>
       ) : null}
 
-      <form id="site-admin-form" onSubmit={handleSave} className="space-y-8">
+      <div className="space-y-8">
         <div className="p-8 rounded-2xl bg-card border border-border space-y-6">
           <h3 className="text-xl font-bold text-foreground">Brand & Footer</h3>
 
@@ -1073,7 +1072,10 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
               type="button"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setIsSocialFormOpen(true)}
+              onClick={() => {
+                resetSocialForm();
+                setIsSocialFormOpen(true);
+              }}
               disabled={!canEdit}
               className="px-5 py-3 bg-muted text-foreground rounded-lg font-medium hover:bg-accent disabled:opacity-60 transition-colors flex items-center gap-2"
             >
@@ -1237,7 +1239,7 @@ export function SiteAdmin({ canEdit }: { canEdit: boolean }) {
             ))}
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

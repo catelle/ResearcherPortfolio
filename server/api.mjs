@@ -4,12 +4,30 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  connectPortfolioSiteCustomDomain,
+  createPortfolioSite,
   describeMongoConnectionError,
+  disconnectPortfolioSiteCustomDomain,
   getPortfolioContentRecord,
+  getPortfolioSiteById,
+  getPortfolioSiteByResolvedHost,
+  getPortfolioSiteBySlug,
+  getPortfolioSiteForUser,
   isMongoConfigured,
+  listPortfolioSitesForUser,
+  publishPortfolioSite,
   savePortfolioContent,
+  verifyPortfolioSiteCustomDomain,
 } from "./content-store.mjs";
-import { isSupabaseConfigured, verifyAccessToken } from "./supabase-auth.mjs";
+import {
+  isAuthConfigured,
+  isEmailVerificationConfigured,
+  loginUser,
+  registerUser,
+  resendVerificationEmail,
+  verifyEmailAddress,
+  verifyAccessToken,
+} from "./auth-store.mjs";
 import {
   isSupabaseStorageConfigured,
   normalizePortfolioStorageContent,
@@ -17,6 +35,8 @@ import {
   resolveStorageAssetValue,
   uploadImageAsset,
 } from "./supabase-storage.mjs";
+import { normalizeRequestHost } from "./platform-config.mjs";
+import { isVercelDomainIntegrationConfigured } from "./vercel-domains.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, "..");
@@ -60,7 +80,10 @@ function loadEnvironmentFile(fileName) {
 export function setCorsHeaders(response) {
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+  response.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, OPTIONS",
+  );
 }
 
 function sendJson(response, statusCode, payload) {
@@ -87,14 +110,30 @@ function getRequestHeader(request, name) {
   return typeof value === "string" ? value : null;
 }
 
-function getRequestPathname(request) {
+function getRequestUrl(request) {
   const rawUrl = typeof request.url === "string" && request.url ? request.url : "/";
   const host = getRequestHeader(request, "host") ?? "localhost";
 
+  return new URL(rawUrl, `http://${host}`);
+}
+
+function getNormalizedRequestHost(request) {
+  return normalizeRequestHost(getRequestHeader(request, "host") ?? "");
+}
+
+function getRequestPathname(request) {
   try {
-    return new URL(rawUrl, `http://${host}`).pathname;
+    return getRequestUrl(request).pathname;
   } catch {
     return "/";
+  }
+}
+
+function getRequestQueryParam(request, key) {
+  try {
+    return getRequestUrl(request).searchParams.get(key);
+  } catch {
+    return null;
   }
 }
 
@@ -156,7 +195,7 @@ async function readJsonBody(request, maxBytes = 1024 * 1024) {
 }
 
 async function getRequestUser(request) {
-  if (!isSupabaseConfigured()) {
+  if (!isAuthConfigured()) {
     return null;
   }
 
@@ -167,13 +206,7 @@ async function getRequestUser(request) {
   }
 
   const token = authorization.slice("Bearer ".length).trim();
-
-  try {
-    return await verifyAccessToken(token);
-  } catch (error) {
-    console.error("Failed to verify Supabase access token.", error);
-    return null;
-  }
+  return verifyAccessToken(token);
 }
 
 function buildContentMeta(record) {
@@ -182,9 +215,11 @@ function buildContentMeta(record) {
     updatedAt: record.updatedAt,
     updatedBy: record.updatedBy,
     isMongoConfigured: isMongoConfigured(),
-    isSupabaseConfigured: isSupabaseConfigured(),
+    isAuthConfigured: isAuthConfigured(),
     isStorageConfigured: isSupabaseStorageConfigured(),
-    canPersist: isMongoConfigured() && isSupabaseConfigured(),
+    canPersist: isMongoConfigured() && isAuthConfigured(),
+    site: record.site ?? null,
+    publishedAt: record.publishedAt ?? null,
   };
 }
 
@@ -213,11 +248,409 @@ async function getContentForResponse(content) {
   }
 }
 
-async function handleContentGet(request, response) {
-  const record = await getPortfolioContentRecord();
+function readTrimmedString(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+async function requireOwnedSite(request, response) {
   const user = await getRequestUser(request);
+
+  if (!user) {
+    sendJson(response, 401, {
+      message: "Sign in to manage your site.",
+    });
+    return null;
+  }
+
+  const siteId = readTrimmedString(getRequestQueryParam(request, "siteId"));
+
+  if (!siteId) {
+    sendJson(response, 400, {
+      message: "A siteId query parameter is required.",
+    });
+    return null;
+  }
+
+  const site = await getPortfolioSiteForUser(siteId, user.id);
+
+  if (!site) {
+    sendJson(response, 404, {
+      message: "That site was not found for your account.",
+    });
+    return null;
+  }
+
+  return { user, site };
+}
+
+async function handleAuthRegister(request, response) {
+  if (!isAuthConfigured()) {
+    sendJson(response, 503, {
+      message:
+        "MongoDB auth is not configured yet. Set MONGODB_URI, MONGODB_DB_NAME, and JWT_SECRET.",
+    });
+    return;
+  }
+
+  let body;
+
+  try {
+    body = await readJsonBody(request);
+  } catch {
+    sendJson(response, 400, {
+      message: "Request body must be valid JSON.",
+    });
+    return;
+  }
+
+  try {
+    const result = await registerUser(body ?? {});
+    sendJson(response, 201, {
+      message:
+        result.message ||
+        "Account created successfully. Check your inbox and verify your email before signing in.",
+    });
+  } catch (error) {
+    sendJson(response, 400, {
+      message:
+        error instanceof Error ? error.message : "Unable to create the account.",
+    });
+  }
+}
+
+async function handleAuthLogin(request, response) {
+  if (!isAuthConfigured()) {
+    sendJson(response, 503, {
+      message:
+        "MongoDB auth is not configured yet. Set MONGODB_URI, MONGODB_DB_NAME, and JWT_SECRET.",
+    });
+    return;
+  }
+
+  let body;
+
+  try {
+    body = await readJsonBody(request);
+  } catch {
+    sendJson(response, 400, {
+      message: "Request body must be valid JSON.",
+    });
+    return;
+  }
+
+  try {
+    const result = await loginUser(body ?? {});
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendJson(response, 400, {
+      message: error instanceof Error ? error.message : "Unable to sign in.",
+    });
+  }
+}
+
+async function handleAuthSession(request, response) {
+  const user = await getRequestUser(request);
+
+  if (!user) {
+    sendJson(response, 401, {
+      message: "Session has expired. Sign in again.",
+    });
+    return;
+  }
+
+  sendJson(response, 200, { user });
+}
+
+async function handleAuthStatus(_request, response) {
+  sendJson(response, 200, {
+    isConfigured: isAuthConfigured(),
+    isMongoConfigured: isMongoConfigured(),
+    isStorageConfigured: isSupabaseStorageConfigured(),
+    isEmailVerificationConfigured: isEmailVerificationConfigured(),
+    isVercelDomainIntegrationConfigured: isVercelDomainIntegrationConfigured(),
+  });
+}
+
+async function handleAuthVerify(request, response) {
+  const token = readTrimmedString(getRequestQueryParam(request, "token"));
+
+  try {
+    const result = await verifyEmailAddress(token);
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendJson(response, 400, {
+      message:
+        error instanceof Error ? error.message : "Unable to verify this email address.",
+    });
+  }
+}
+
+async function handleAuthResendVerification(request, response) {
+  let body;
+
+  try {
+    body = await readJsonBody(request);
+  } catch {
+    sendJson(response, 400, {
+      message: "Request body must be valid JSON.",
+    });
+    return;
+  }
+
+  try {
+    const result = await resendVerificationEmail(body?.email);
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendJson(response, 400, {
+      message:
+        error instanceof Error
+          ? error.message
+          : "Unable to resend the verification email.",
+    });
+  }
+}
+
+async function handleSitesGet(request, response) {
+  const user = await getRequestUser(request);
+
+  if (!user) {
+    sendJson(response, 401, {
+      message: "Sign in to load your sites.",
+    });
+    return;
+  }
+
+  const sites = await listPortfolioSitesForUser(user.id);
+  sendJson(response, 200, {
+    sites,
+    config: {
+      isMongoConfigured: isMongoConfigured(),
+      isAuthConfigured: isAuthConfigured(),
+      isStorageConfigured: isSupabaseStorageConfigured(),
+      canPersist: isMongoConfigured() && isAuthConfigured(),
+    },
+  });
+}
+
+async function handleSitesPost(request, response) {
+  const user = await getRequestUser(request);
+
+  if (!user) {
+    sendJson(response, 401, {
+      message: "Sign in to create a site.",
+    });
+    return;
+  }
+
+  let body;
+
+  try {
+    body = await readJsonBody(request);
+  } catch {
+    sendJson(response, 400, {
+      message: "Request body must be valid JSON.",
+    });
+    return;
+  }
+
+  try {
+    const site = await createPortfolioSite({
+      name: body?.name,
+      slug: body?.slug,
+      ownerUserId: user.id,
+      ownerEmail: user.email,
+    });
+
+    sendJson(response, 201, {
+      message: "Site created successfully.",
+      site,
+    });
+  } catch (error) {
+    sendJson(response, 400, {
+      message:
+        error instanceof Error ? error.message : "Unable to create the site.",
+    });
+  }
+}
+
+async function handleSitePublishPost(request, response) {
+  const owned = await requireOwnedSite(request, response);
+
+  if (!owned) {
+    return;
+  }
+
+  try {
+    const result = await publishPortfolioSite(
+      owned.site.id,
+      owned.user.email ?? owned.user.id,
+    );
+
+    sendJson(response, 200, {
+      message: "Site published successfully.",
+      site: result.site,
+      publicUrl: result.publicUrl,
+      publishedAt: result.publishedAt,
+    });
+  } catch (error) {
+    sendJson(response, 400, {
+      message:
+        error instanceof Error ? error.message : "Unable to publish the site.",
+    });
+  }
+}
+
+async function handleSiteDomainPost(request, response) {
+  const owned = await requireOwnedSite(request, response);
+
+  if (!owned) {
+    return;
+  }
+
+  let body;
+
+  try {
+    body = await readJsonBody(request);
+  } catch {
+    sendJson(response, 400, {
+      message: "Request body must be valid JSON.",
+    });
+    return;
+  }
+
+  try {
+    const site = await connectPortfolioSiteCustomDomain(
+      owned.site.id,
+      body?.domain,
+      owned.user.email ?? owned.user.id,
+    );
+
+    sendJson(response, 200, {
+      message: site?.customDomain
+        ? site.customDomainStatus === "verified"
+          ? "Custom domain connected successfully."
+          : "Custom domain saved. Complete the DNS verification and verify again when ready."
+        : "Custom domain updated.",
+      site,
+    });
+  } catch (error) {
+    sendJson(response, 400, {
+      message:
+        error instanceof Error
+          ? error.message
+          : "Unable to connect the custom domain.",
+    });
+  }
+}
+
+async function handleSiteDomainVerifyPost(request, response) {
+  const owned = await requireOwnedSite(request, response);
+
+  if (!owned) {
+    return;
+  }
+
+  try {
+    const site = await verifyPortfolioSiteCustomDomain(
+      owned.site.id,
+      owned.user.email ?? owned.user.id,
+    );
+
+    sendJson(response, 200, {
+      message:
+        site?.customDomainStatus === "verified"
+          ? "Custom domain verified successfully."
+          : "Domain check complete. Finish the DNS challenge and try verifying again.",
+      site,
+    });
+  } catch (error) {
+    sendJson(response, 400, {
+      message:
+        error instanceof Error ? error.message : "Unable to verify the custom domain.",
+    });
+  }
+}
+
+async function handleSiteDomainDelete(request, response) {
+  const owned = await requireOwnedSite(request, response);
+
+  if (!owned) {
+    return;
+  }
+
+  try {
+    const site = await disconnectPortfolioSiteCustomDomain(
+      owned.site.id,
+      owned.user.email ?? owned.user.id,
+    );
+
+    sendJson(response, 200, {
+      message:
+        "Custom domain removed from this site. If it was already attached in Vercel, remove it there as well.",
+      site,
+    });
+  } catch (error) {
+    sendJson(response, 400, {
+      message:
+        error instanceof Error ? error.message : "Unable to remove the custom domain.",
+    });
+  }
+}
+
+async function handleContentGet(request, response) {
+  const user = await getRequestUser(request);
+  const siteId = readTrimmedString(getRequestQueryParam(request, "siteId"));
+  const siteSlug = readTrimmedString(getRequestQueryParam(request, "siteSlug"));
+  const resolvedHost = getNormalizedRequestHost(request);
+  const hostSite =
+    !siteId && !siteSlug ? await getPortfolioSiteByResolvedHost(resolvedHost) : null;
+  const resolvedSiteSlug = siteSlug || hostSite?.slug || "";
+
+  if (siteId && !user) {
+    sendJson(response, 401, {
+      message: "Sign in to load draft content.",
+    });
+    return;
+  }
+
+  if (siteId && user) {
+    const site = await getPortfolioSiteForUser(siteId, user.id);
+
+    if (!site) {
+      sendJson(response, 404, {
+        message: "That site was not found for your account.",
+      });
+      return;
+    }
+  }
+
+  if (!siteId && resolvedSiteSlug) {
+    const publicSite = await getPortfolioSiteBySlug(resolvedSiteSlug);
+
+    if (!publicSite) {
+      sendJson(response, 404, {
+        message: "The requested site could not be found.",
+      });
+      return;
+    }
+  }
+
+  const record = await getPortfolioContentRecord({
+    siteId: siteId || null,
+    siteSlug: siteId ? null : resolvedSiteSlug || null,
+    userId: user?.id ?? null,
+    mode: siteId ? "admin" : "public",
+  });
+
+  if (!siteId && resolvedSiteSlug && record.site && !record.publishedAt) {
+    sendJson(response, 404, {
+      message: "This site has not been published yet.",
+    });
+    return;
+  }
+
   const content = await getContentForResponse(
-    getContentForAudience(record.content, Boolean(user)),
+    getContentForAudience(record.content, Boolean(user && siteId)),
   );
 
   sendJson(response, 200, {
@@ -227,26 +660,17 @@ async function handleContentGet(request, response) {
 }
 
 async function handleContentPut(request, response) {
-  if (!isSupabaseConfigured()) {
+  if (!isAuthConfigured()) {
     sendJson(response, 503, {
-      message: "Supabase is not configured. Admin authentication is unavailable.",
+      message:
+        "MongoDB auth is not configured yet. Set MONGODB_URI, MONGODB_DB_NAME, and JWT_SECRET.",
     });
     return;
   }
 
-  if (!isMongoConfigured()) {
-    sendJson(response, 503, {
-      message: "MongoDB is not configured. Remote content persistence is unavailable.",
-    });
-    return;
-  }
+  const owned = await requireOwnedSite(request, response);
 
-  const user = await getRequestUser(request);
-
-  if (!user) {
-    sendJson(response, 401, {
-      message: "Sign in to save changes.",
-    });
+  if (!owned) {
     return;
   }
 
@@ -270,15 +694,21 @@ async function handleContentPut(request, response) {
   }
 
   try {
-    const normalizedContent = normalizePortfolioStorageContent(body?.content ?? {});
-    const record = await savePortfolioContent(
-      normalizedContent,
-      user.email ?? user.id,
+    await savePortfolioContent(
+      normalizePortfolioStorageContent(body?.content ?? {}),
+      owned.user.email ?? owned.user.id,
+      owned.site.id,
     );
+
+    const record = await getPortfolioContentRecord({
+      siteId: owned.site.id,
+      userId: owned.user.id,
+      mode: "admin",
+    });
     const content = await getContentForResponse(record.content);
 
     sendJson(response, 200, {
-      message: "Portfolio content saved successfully.",
+      message: "Draft saved successfully.",
       content,
       meta: buildContentMeta(record),
     });
@@ -288,14 +718,10 @@ async function handleContentPut(request, response) {
         ? describeMongoConnectionError(error)
         : error instanceof Error
           ? error.message
-          : "Failed to save portfolio content.";
+          : "Failed to save site content.";
 
     sendJson(response, 500, { message });
   }
-}
-
-function readTrimmedString(value) {
-  return typeof value === "string" ? value.trim() : "";
 }
 
 function validateRecommendationPayload(body) {
@@ -368,6 +794,28 @@ async function handleRecommendationPost(request, response) {
     return;
   }
 
+  const siteSlug = readTrimmedString(getRequestQueryParam(request, "siteSlug"));
+  const siteId = readTrimmedString(getRequestQueryParam(request, "siteId"));
+  const site = siteSlug
+    ? await getPortfolioSiteBySlug(siteSlug)
+    : siteId
+      ? await getPortfolioSiteById(siteId)
+      : null;
+
+  if (!site) {
+    sendJson(response, 404, {
+      message: "Recommendation submissions require a valid published site.",
+      });
+    return;
+  }
+
+  if (site.status !== "published") {
+    sendJson(response, 400, {
+      message: "Recommendations can only be submitted for published sites.",
+    });
+    return;
+  }
+
   let body;
 
   try {
@@ -415,10 +863,13 @@ async function handleRecommendationPost(request, response) {
       buffer,
       contentType: validation.payload.contentType,
       fileName: validation.payload.fileName,
-      folder: "recommendation-photos",
+      folder: `sites/${site.id}/recommendation-photos`,
     });
 
-    const record = await getPortfolioContentRecord();
+    const record = await getPortfolioContentRecord({
+      siteId: site.id,
+      mode: "admin",
+    });
     const nextRecommendation = {
       id: `recommendation-${randomUUID()}`,
       name: validation.payload.name,
@@ -440,16 +891,20 @@ async function handleRecommendationPost(request, response) {
       },
     };
 
-    const savedRecord = await savePortfolioContent(nextContent, "public-submission");
+    await savePortfolioContent(nextContent, "public-submission", site.id);
+    const nextRecord = await getPortfolioContentRecord({
+      siteId: site.id,
+      mode: "admin",
+    });
     const content = await getContentForResponse(
-      getContentForAudience(savedRecord.content, false),
+      getContentForAudience(nextRecord.content, false),
     );
 
     sendJson(response, 201, {
       message:
         "Thanks for sharing your feedback. It has been submitted for review.",
       content,
-      meta: buildContentMeta(savedRecord),
+      meta: buildContentMeta(nextRecord),
     });
   } catch (error) {
     sendJson(response, 500, {
@@ -462,10 +917,9 @@ async function handleRecommendationPost(request, response) {
 }
 
 async function handleUploadPost(request, response) {
-  if (!isSupabaseConfigured()) {
-    sendJson(response, 503, {
-      message: "Supabase auth is not configured. Admin uploads are unavailable.",
-    });
+  const owned = await requireOwnedSite(request, response);
+
+  if (!owned) {
     return;
   }
 
@@ -473,15 +927,6 @@ async function handleUploadPost(request, response) {
     sendJson(response, 503, {
       message:
         "Supabase Storage is not configured. Set SUPABASE_SERVICE_ROLE_KEY and SUPABASE_STORAGE_BUCKET before uploading images.",
-    });
-    return;
-  }
-
-  const user = await getRequestUser(request);
-
-  if (!user) {
-    sendJson(response, 401, {
-      message: "Sign in to upload images.",
     });
     return;
   }
@@ -516,7 +961,7 @@ async function handleUploadPost(request, response) {
 
   if (!folder) {
     sendJson(response, 400, {
-      message: "Upload type must be either `profile` or `blog`.",
+      message: "Upload type must be either `profile`, `project`, or `blog`.",
     });
     return;
   }
@@ -556,9 +1001,11 @@ async function handleUploadPost(request, response) {
       buffer,
       contentType: body.contentType,
       fileName: body.fileName,
-      folder,
+      folder: `sites/${owned.site.id}/${folder}`,
     });
-    const url = await resolveStorageAssetValue(asset.reference).catch(() => asset.publicUrl);
+    const url = await resolveStorageAssetValue(asset.reference).catch(
+      () => asset.publicUrl,
+    );
 
     sendJson(response, 200, {
       message: "Image uploaded successfully.",
@@ -590,6 +1037,72 @@ export async function handleApiRequest(request, response, pathname = null) {
   }
 
   try {
+    if (resolvedPathname === "/api/auth/register" && request.method === "POST") {
+      await handleAuthRegister(request, response);
+      return true;
+    }
+
+    if (resolvedPathname === "/api/auth/login" && request.method === "POST") {
+      await handleAuthLogin(request, response);
+      return true;
+    }
+
+    if (resolvedPathname === "/api/auth/session" && request.method === "GET") {
+      await handleAuthSession(request, response);
+      return true;
+    }
+
+    if (resolvedPathname === "/api/auth/status" && request.method === "GET") {
+      await handleAuthStatus(request, response);
+      return true;
+    }
+
+    if (resolvedPathname === "/api/auth/verify" && request.method === "GET") {
+      await handleAuthVerify(request, response);
+      return true;
+    }
+
+    if (
+      resolvedPathname === "/api/auth/resend-verification" &&
+      request.method === "POST"
+    ) {
+      await handleAuthResendVerification(request, response);
+      return true;
+    }
+
+    if (resolvedPathname === "/api/sites" && request.method === "GET") {
+      await handleSitesGet(request, response);
+      return true;
+    }
+
+    if (resolvedPathname === "/api/sites" && request.method === "POST") {
+      await handleSitesPost(request, response);
+      return true;
+    }
+
+    if (resolvedPathname === "/api/sites/publish" && request.method === "POST") {
+      await handleSitePublishPost(request, response);
+      return true;
+    }
+
+    if (resolvedPathname === "/api/sites/domain" && request.method === "POST") {
+      await handleSiteDomainPost(request, response);
+      return true;
+    }
+
+    if (
+      resolvedPathname === "/api/sites/domain/verify" &&
+      request.method === "POST"
+    ) {
+      await handleSiteDomainVerifyPost(request, response);
+      return true;
+    }
+
+    if (resolvedPathname === "/api/sites/domain" && request.method === "DELETE") {
+      await handleSiteDomainDelete(request, response);
+      return true;
+    }
+
     if (resolvedPathname === "/api/content" && request.method === "GET") {
       await handleContentGet(request, response);
       return true;
